@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestione Cassa Oratorio</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #eff6ff, #e0e7ff);
+    min-height: 100vh;
+    padding: 16px;
+    color: #1f2937;
+  }
+  .container { max-width: 480px; margin: 0 auto; }
+  .header {
+    background: white; border-radius: 12px; padding: 20px;
+    margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .header h1 { font-size: 22px; font-weight: 700; }
+  .steps {
+    background: white; border-radius: 12px; padding: 16px;
+    margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .step-circles { display: flex; justify-content: space-between; align-items: center; }
+  .step-circle {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; background: #d1d5db; color: #4b5563; flex-shrink: 0;
+  }
+  .step-circle.active { background: #2563eb; color: white; }
+  .step-circle.done { background: #22c55e; color: white; }
+  .step-line { flex: 1; height: 3px; background: #d1d5db; margin: 0 6px; }
+  .step-labels { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: #6b7280; }
+  .card {
+    background: white; border-radius: 12px; padding: 20px;
+    margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .card h2 { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  .denom-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid #e5e7eb;
+  }
+  .denom-label { font-size: 14px; font-weight: 500; width: 100px; flex-shrink: 0; }
+  .denom-controls { display: flex; align-items: center; gap: 6px; }
+  .btn-incr {
+    width: 32px; height: 32px; border-radius: 6px; border: none;
+    font-weight: 700; font-size: 18px; cursor: pointer; user-select: none; flex-shrink: 0;
+  }
+  .btn-minus { background: #fee2e2; color: #dc2626; }
+  .btn-plus { background: #dcfce7; color: #16a34a; }
+  .denom-input {
+    width: 48px; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px;
+    text-align: center; font-size: 15px;
+  }
+  .denom-value { font-size: 13px; color: #6b7280; width: 60px; text-align: right; flex-shrink: 0; }
+  .total-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 14px; padding-top: 14px; border-top: 2px solid #d1d5db;
+  }
+  .total-row .label { font-size: 17px; font-weight: 700; }
+  .total-row .value { font-size: 24px; font-weight: 700; color: #2563eb; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; color: #374151; }
+  .field-row { display: flex; align-items: center; gap: 8px; }
+  .field-input {
+    flex: 1; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 16px; min-width: 0;
+  }
+  .btn-money {
+    width: 40px; height: 40px; border-radius: 8px; border: none;
+    font-weight: 700; font-size: 20px; cursor: pointer; flex-shrink: 0;
+  }
+  .summary-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; margin-bottom: 16px; }
+  .summary-line { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
+  .summary-line.bold { font-weight: 700; border-top: 1px solid #bfdbfe; margin-top: 6px; padding-top: 8px; }
+  .summary-line.top { margin-top: 8px; padding-top: 8px; border-top: 1px solid #bfdbfe; }
+  .field-hint { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+  .btn-main {
+    width: 100%; padding: 14px; border-radius: 10px; border: none;
+    font-size: 16px; font-weight: 700; cursor: pointer; color: white;
+    background: #2563eb; margin-top: 8px;
+  }
+  .btn-row { display: flex; gap: 12px; }
+  .btn-row .btn-main { flex: 1; margin-top: 0; }
+  .btn-secondary { background: #d1d5db; color: #374151; }
+  .btn-success { background: #16a34a; }
+  .row-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+  .row-line.noborder { border-bottom: none; }
+  .row-line .lbl { color: #374151; }
+  .row-line .val { font-weight: 600; }
+  .big-income {
+    background: linear-gradient(135deg, #22c55e, #059669);
+    border-radius: 14px; padding: 22px; margin-bottom: 16px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+  }
+  .big-income .lbl { color: white; font-weight: 700; font-size: 15px; }
+  .big-income .val { color: white; font-weight: 700; font-size: 26px; }
+  .alert { border-radius: 8px; padding: 12px; font-size: 13px; margin-top: 10px; border-left: 4px solid; }
+  .alert-green { background: #f0fdf4; border-color: #22c55e; color: #166534; }
+  .alert-red { background: #fef2f2; border-color: #ef4444; color: #991b1b; }
+  .alert-yellow { background: #fefce8; border-color: #eab308; color: #854d0e; }
+  .alert-blue { background: #eff6ff; border-color: #3b82f6; color: #1e40af; }
+  .alert-orange { background: #fff7ed; border-color: #f97316; color: #9a3412; }
+  .verify-box { border-radius: 10px; padding: 14px; margin-bottom: 16px; border: 2px solid; }
+  .verify-ok { background: #f0fdf4; border-color: #22c55e; }
+  .verify-warn { background: #fff7ed; border-color: #f97316; }
+  .indigo-box { background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 14px; margin-top: 10px; }
+  .indigo-box .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .indigo-box .val { font-size: 22px; font-weight: 700; color: #4f46e5; }
+  .hidden { display: none; }
+  .alert strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>Gestione Cassa - Bar Oratorio</h1>
+  </div>
+
+  <div class="steps">
+    <div class="step-circles">
+      <div class="step-circle" id="circle-0">1</div>
+      <div class="step-line"></div>
+      <div class="step-circle" id="circle-1">2</div>
+      <div class="step-line"></div>
+      <div class="step-circle" id="circle-2">3</div>
+    </div>
+    <div class="step-labels">
+      <span>Fondo Cassa</span><span>Chiusura</span><span>Quadratura</span>
+    </div>
+  </div>
+
+  <div id="step-initial">
+    <div class="card">
+      <h2>Fondo Cassa Iniziale</h2>
+      <div id="denoms-initial"></div>
+      <div class="total-row">
+        <span class="label">Totale:</span>
+        <span class="value" id="total-initial">0,00 EUR</span>
+      </div>
+    </div>
+    <button class="btn-main" id="btn-go-final" type="button">Continua a Chiusura Cassa</button>
+  </div>
+
+  <div id="step-final" class="hidden">
+    <div class="card">
+      <h2>Conteggio Cassa Finale</h2>
+      <div id="denoms-final"></div>
+      <div class="total-row">
+        <span class="label">Totale:</span>
+        <span class="value" id="total-final">0,00 EUR</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Incassi e Pagamenti</h2>
+      <div class="field">
+        <label>Incasso Contanti (dal registratore)</label>
+        <div class="field-row">
+          <button class="btn-money btn-minus" id="btn-minus-batched" type="button">-</button>
+          <input class="field-input" type="number" step="0.01" id="totalBatched" placeholder="0.00">
+          <button class="btn-money btn-plus" id="btn-plus-batched" type="button">+</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Incasso Satispay</label>
+        <div class="field-row">
+          <button class="btn-money btn-minus" id="btn-minus-satispay" type="button">-</button>
+          <input class="field-input" type="number" step="0.01" id="satispay" placeholder="0.00">
+          <button class="btn-money btn-plus" id="btn-plus-satispay" type="button">+</button>
+        </div>
+      </div>
+
+      <div class="summary-box">
+        <div class="summary-line"><span>Incasso Contanti:</span><span id="sum-contanti">0,00 EUR</span></div>
+        <div class="summary-line"><span>Incasso Satispay:</span><span id="sum-satispay">0,00 EUR</span></div>
+        <div class="summary-line bold"><span>Incasso Totale:</span><span id="sum-totale">0,00 EUR</span></div>
+        <div class="summary-line top"><span>Contante Conteggiato:</span><span id="sum-contante-cont">0,00 EUR</span></div>
+      </div>
+
+      <div class="field">
+        <label>Rimborsi</label>
+        <div class="field-row">
+          <button class="btn-money btn-minus" id="btn-minus-refunds" type="button">-</button>
+          <input class="field-input" type="number" step="0.01" id="refunds" placeholder="0.00">
+          <button class="btn-money btn-plus" id="btn-plus-refunds" type="button">+</button>
+        </div>
+      </div>
+
+      <div class="field" style="padding-top:14px;border-top:1px solid #e5e7eb;">
+        <label>Incasso Totale Atteso (opzionale - per verifica)</label>
+        <div class="field-row">
+          <button class="btn-money btn-minus" id="btn-minus-expected" type="button">-</button>
+          <input class="field-input" type="number" step="0.01" id="expectedTotal" placeholder="0.00">
+          <button class="btn-money btn-plus" id="btn-plus-expected" type="button">+</button>
+        </div>
+        <p class="field-hint">Inserisci l'incasso totale dal registratore per verificare se ci sono errori nei metodi di pagamento</p>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-main btn-secondary" id="btn-back-initial" type="button">Indietro</button>
+      <button class="btn-main" id="btn-go-summary" type="button">Vedi Quadratura</button>
+    </div>
+  </div>
+
+  <div id="step-summary" class="hidden">
+    <div class="card">
+      <h2>Riepilogo Giornata</h2>
+      <div class="row-line"><span class="lbl">Fondo Cassa Iniziale:</span><span class="val" id="rec-fondo">0,00 EUR</span></div>
+      <div class="row-line"><span class="lbl">Incasso Contanti:</span><span class="val" id="rec-contanti">0,00 EUR</span></div>
+      <div class="row-line noborder"><span class="lbl">Incasso Satispay:</span><span class="val" id="rec-satispay">0,00 EUR</span></div>
+    </div>
+
+    <div class="big-income">
+      <span class="lbl">INCASSO TOTALE GIORNATA</span>
+      <span class="val" id="big-total">0,00 EUR</span>
+    </div>
+
+    <div id="verify-box-container"></div>
+
+    <div class="card">
+      <h2>Quadratura Cassa</h2>
+      <div class="row-line"><span class="lbl">Contante Atteso in Cassa:</span><span class="val" id="quad-atteso">0,00 EUR</span></div>
+      <div class="field-hint" id="quad-hint" style="margin-top:-6px;margin-bottom:8px;padding-left:4px;">(Fondo + Incasso Contanti - Rimborsi)</div>
+      <div class="row-line"><span class="lbl">Contante Conteggiato:</span><span class="val" id="quad-contato">0,00 EUR</span></div>
+      <div class="row-line noborder"><span class="lbl" style="font-weight:600;">Differenza Contante:</span><span class="val" id="quad-diff">0,00 EUR</span></div>
+      <div id="quad-alerts"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">Versamento da Effettuare</h3>
+      <div class="row-line"><span class="lbl">Rimborsi Effettuati:</span><span class="val" id="vers-rimborsi" style="color:#dc2626;">0,00 EUR</span></div>
+      <div class="indigo-box">
+        <div class="row">
+          <span style="color:#374151;">Contante da versare:</span>
+          <span class="val" id="vers-importo">0,00 EUR</span>
+        </div>
+        <p style="font-size:13px;color:#6b7280;">Solo l'eccedenza rispetto al fondo cassa</p>
+        <div id="vers-alert"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-main btn-secondary" id="btn-back-final" type="button">Modifica Dati</button>
+      <button class="btn-main btn-success" id="btn-reset" type="button">Nuova Giornata</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  var denominations = [
+    { value: 0.01, label: '1 Centesimo' },
+    { value: 0.05, label: '5 Centesimi' },
+    { value: 0.10, label: '10 Centesimi' },
+    { value: 0.20, label: '20 Centesimi' },
+    { value: 0.50, label: '50 Centesimi' },
+    { value: 1, label: '1 Euro' },
+    { value: 2, label: '2 Euro' },
+    { value: 5, label: '5 Euro' },
+    { value: 10, label: '10 Euro' },
+    { value: 20, label: '20 Euro' },
+    { value: 50, label: '50 Euro' },
+    { value: 100, label: '100 Euro' }
+  ];
+  var denomsReversed = denominations.slice().reverse();
+
+  var initialCash = {};
+  var finalCash = {};
+  denominations.forEach(function(d) {
+    initialCash[d.value] = 0;
+    finalCash[d.value] = 0;
+  });
+
+  function fmt(n) {
+    return n.toFixed(2).replace('.', ',') + ' EUR';
+  }
+
+  function getCashObj(containerId) {
+    return containerId === 'denoms-initial' ? initialCash : finalCash;
+  }
+
+  function el(tag, props, children) {
+    var node = document.createElement(tag);
+    if (props) {
+      Object.keys(props).forEach(function(key) {
+        if (key === 'className') node.className = props[key];
+        else if (key === 'text') node.textContent = props[key];
+        else node.setAttribute(key, props[key]);
+      });
+    }
+    if (children) {
+      children.forEach(function(c) { node.appendChild(c); });
+    }
+    return node;
+  }
+
+  function buildDenomRow(containerId, d) {
+    var cashObj = getCashObj(containerId);
+    var qty = cashObj[d.value] || 0;
+
+    var row = el('div', { className: 'denom-row' });
+    var label = el('span', { className: 'denom-label', text: d.label });
+    var controls = el('div', { className: 'denom-controls' });
+
+    var btnMinus = el('button', { className: 'btn-incr btn-minus', type: 'button', text: '-' });
+    var input = el('input', { className: 'denom-input', type: 'number', min: '0', placeholder: '0' });
+    input.value = qty || '';
+    var btnPlus = el('button', { className: 'btn-incr btn-plus', type: 'button', text: '+' });
+    var valueSpan = el('span', { className: 'denom-value', text: fmt(qty * d.value) });
+
+    btnMinus.addEventListener('click', function() {
+      cashObj[d.value] = Math.max(0, (cashObj[d.value] || 0) - 1);
+      input.value = cashObj[d.value] || '';
+      valueSpan.textContent = fmt(cashObj[d.value] * d.value);
+      recalc();
+    });
+
+    btnPlus.addEventListener('click', function() {
+      cashObj[d.value] = (cashObj[d.value] || 0) + 1;
+      input.value = cashObj[d.value] || '';
+      valueSpan.textContent = fmt(cashObj[d.value] * d.value);
+      recalc();
+    });
+
+    input.addEventListener('input', function() {
+      var v = Math.max(0, parseInt(input.value, 10) || 0);
+      cashObj[d.value] = v;
+      valueSpan.textContent = fmt(v * d.value);
+      recalc();
+    });
+
+    input.addEventListener('focus', function() { input.select(); });
+
+    controls.appendChild(btnMinus);
+    controls.appendChild(input);
+    controls.appendChild(btnPlus);
+    controls.appendChild(valueSpan);
+
+    row.appendChild(label);
+    row.appendChild(controls);
+    return row;
+  }
+
+  function renderDenoms(containerId) {
+    var container = document.getElementById(containerId);
+    container.innerHTML = '';
+    denomsReversed.forEach(function(d) {
+      container.appendChild(buildDenomRow(containerId, d));
+    });
+  }
+
+  function sumCash(obj) {
+    var sum = 0;
+    Object.keys(obj).forEach(function(key) {
+      sum += parseFloat(key) * (parseInt(obj[key], 10) || 0);
+    });
+    return sum;
+  }
+
+  function getNum(id) {
+    var node = document.getElementById(id);
+    var v = node ? parseFloat(node.value) : NaN;
+    return isNaN(v) ? 0 : v;
+  }
+
+  function setupAdjustButton(btnId, fieldId, amount) {
+    var btn = document.getElementById(btnId);
+    btn.addEventListener('click', function() {
+      var field = document.getElementById(fieldId);
+      var current = parseFloat(field.value) || 0;
+      var next = current + amount;
+      if (next < 0) next = 0;
+      field.value = next.toFixed(2);
+      recalc();
+    });
+  }
+
+  function setText(id, text) {
+    var node = document.getElementById(id);
+    if (node) node.textContent = text;
+  }
+
+  function clearNode(node) {
+    while (node.firstChild) node.removeChild(node.firstChild);
+  }
+
+  function buildAlert(type, strongText, restText) {
+    var div = el('div', { className: 'alert alert-' + type });
+    if (strongText) {
+      var strong = el('strong', { text: strongText + ' ' });
+      div.appendChild(strong);
+    }
+    div.appendChild(document.createTextNode(restText));
+    return div;
+  }
+
+  var currentStep = 'initial';
+
+  function goToStep(step) {
+    currentStep = step;
+    document.getElementById('step-initial').className = step === 'initial' ? '' : 'hidden';
+    document.getElementById('step-final').className = step === 'final' ? '' : 'hidden';
+    document.getElementById('step-summary').className = step === 'summary' ? '' : 'hidden';
+
+    var order = ['initial', 'final', 'summary'];
+    order.forEach(function(s, idx) {
+      var circle = document.getElementById('circle-' + idx);
+      circle.className = 'step-circle';
+      if (s === step) {
+        circle.className = 'step-circle active';
+      } else if (order.indexOf(step) > idx) {
+        circle.className = 'step-circle done';
+      }
+    });
+
+    recalc();
+    window.scrollTo(0, 0);
+  }
+
+  function recalc() {
+    var initialTotal = sumCash(initialCash);
+    var finalTotal = sumCash(finalCash);
+    var satispay = getNum('satispay');
+    var cashBatched = getNum('totalBatched');
+    var refunds = getNum('refunds');
+    var expectedTotalSales = getNum('expectedTotal');
+
+    var totalSales = cashBatched + satispay;
+    var expectedCash = initialTotal + cashBatched - refunds;
+    var difference = finalTotal - expectedCash;
+
+    setText('total-initial', fmt(initialTotal));
+    setText('total-final', fmt(finalTotal));
+
+    setText('sum-contanti', fmt(cashBatched));
+    setText('sum-satispay', fmt(satispay));
+    setText('sum-totale', fmt(totalSales));
+    setText('sum-contante-cont', fmt(finalTotal));
+
+    setText('rec-fondo', fmt(initialTotal));
+    setText('rec-contanti', fmt(cashBatched));
+    setText('rec-satispay', fmt(satispay));
+    setText('big-total', fmt(totalSales));
+
+    var verifyContainer = document.getElementById('verify-box-container');
+    clearNode(verifyContainer);
+    var totalSalesDifference = null;
+
+    if (expectedTotalSales > 0) {
+      totalSalesDifference = totalSales - expectedTotalSales;
+      var ok = Math.abs(totalSalesDifference) < 0.01;
+
+      var box = el('div', { className: 'verify-box ' + (ok ? 'verify-ok' : 'verify-warn') });
+
+      var headerRow = el('div', { style: 'display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;' });
+      var headerLbl = el('span', { style: 'font-weight:600;color:#374151;', text: 'Verifica Incasso Totale:' });
+      var headerVal = el('span', { style: 'font-weight:700;font-size:16px;color:' + (ok ? '#16a34a' : '#ea580c') + ';', text: ok ? 'Corretto' : 'Differenza' });
+      headerRow.appendChild(headerLbl);
+      headerRow.appendChild(headerVal);
+      box.appendChild(headerRow);
+
+      var detailWrap = el('div', { style: 'font-size:14px;' });
+
+      var rowA = el('div', { style: 'display:flex;justify-content:space-between;' });
+      rowA.appendChild(el('span', { style: 'color:#6b7280;', text: 'Incasso Atteso:' }));
+      rowA.appendChild(el('span', { style: 'font-weight:600;', text: fmt(expectedTotalSales) }));
+      detailWrap.appendChild(rowA);
+
+      var rowB = el('div', { style: 'display:flex;justify-content:space-between;' });
+      rowB.appendChild(el('span', { style: 'color:#6b7280;', text: 'Incasso Calcolato:' }));
+      rowB.appendChild(el('span', { style: 'font-weight:600;', text: fmt(totalSales) }));
+      detailWrap.appendChild(rowB);
+
+      if (!ok) {
+        var rowC = el('div', { style: 'display:flex;justify-content:space-between;border-top:1px solid #ddd;padding-top:6px;margin-top:6px;' });
+        rowC.appendChild(el('span', { style: 'font-weight:600;', text: 'Differenza:' }));
+        rowC.appendChild(el('span', { style: 'font-weight:700;color:#ea580c;', text: (totalSalesDifference > 0 ? '+' : '') + fmt(totalSalesDifference) }));
+        detailWrap.appendChild(rowC);
+        detailWrap.appendChild(buildAlert('orange', null, "L'incasso totale non corrisponde. Verifica che tutti i pagamenti siano stati registrati correttamente."));
+      }
+      if (ok && Math.abs(difference) >= 0.01) {
+        detailWrap.appendChild(buildAlert('blue', null, "L'incasso totale e' corretto! Il problema e' solo nella distribuzione tra contanti e Satispay."));
+      }
+
+      box.appendChild(detailWrap);
+      verifyContainer.appendChild(box);
+    }
+
+    var attesoEl = document.getElementById('quad-atteso');
+    attesoEl.textContent = fmt(expectedCash);
+    attesoEl.style.color = expectedCash < 0 ? '#ea580c' : '#2563eb';
+
+    var quadHintNode = document.getElementById('quad-hint');
+    clearNode(quadHintNode);
+    quadHintNode.appendChild(document.createTextNode('(Fondo + Incasso Contanti - Rimborsi)'));
+    if (expectedCash < 0) {
+      var hintWarn = el('span', { style: 'display:block;color:#ea580c;margin-top:4px;', text: 'I rimborsi superano fondo + incasso contanti' });
+      quadHintNode.appendChild(hintWarn);
+    }
+
+    setText('quad-contato', fmt(finalTotal));
+    var diffEl = document.getElementById('quad-diff');
+    diffEl.textContent = (difference > 0 ? '+' : '') + fmt(difference);
+    diffEl.style.color = Math.abs(difference) < 0.01 ? '#16a34a' : '#dc2626';
+
+    var alertsContainer = document.getElementById('quad-alerts');
+    clearNode(alertsContainer);
+
+    if (totalSalesDifference !== null && Math.abs(totalSalesDifference) < 0.01 && Math.abs(difference) >= 0.01) {
+      alertsContainer.appendChild(buildAlert('green', 'Quadratura OK!', "L'incasso totale e' corretto. La differenza nel contante e' normale: i rimborsi hanno ridotto il contante disponibile. Non c'e' errore!"));
+    } else if (totalSalesDifference === null && Math.abs(difference) >= 0.01) {
+      var msg1 = difference > 0 ? 'Eccedenza: hai piu\' contante del previsto' : 'Ammanco: hai meno contante del previsto';
+      alertsContainer.appendChild(buildAlert('yellow', null, msg1));
+      alertsContainer.appendChild(buildAlert('blue', 'Verifica:', "Inserisci l'Incasso Totale Atteso per capire se c'e' davvero un errore o se e' solo dovuto ai rimborsi. Se l'incasso totale quadra, va tutto bene!"));
+    } else if (totalSalesDifference !== null && Math.abs(totalSalesDifference) >= 0.01) {
+      alertsContainer.appendChild(buildAlert('red', 'Attenzione:', "L'incasso totale non corrisponde. Verifica gli importi di contanti e Satispay."));
+    }
+    if (Math.abs(difference) < 0.01 && (totalSalesDifference === null || Math.abs(totalSalesDifference) < 0.01)) {
+      alertsContainer.appendChild(buildAlert('green', null, 'Perfetto: tutto quadra!'));
+    }
+
+    setText('vers-rimborsi', fmt(refunds));
+    var versamento = Math.max(0, finalTotal - initialTotal);
+    setText('vers-importo', fmt(versamento));
+
+    var versAlertNode = document.getElementById('vers-alert');
+    clearNode(versAlertNode);
+    if ((finalTotal - initialTotal) <= 0 && finalTotal >= 0) {
+      versAlertNode.appendChild(buildAlert('blue', null, 'Nessun versamento da fare. I rimborsi hanno assorbito gli incassi.'));
+    }
+    if (finalTotal < 0) {
+      versAlertNode.appendChild(buildAlert('orange', 'Attenzione:', 'la cassa e\' in negativo. Devi aggiungere ' + fmt(Math.abs(finalTotal)) + ' per ripristinare almeno a zero.'));
+    }
+  }
+
+  function resetAll() {
+    denominations.forEach(function(d) {
+      initialCash[d.value] = 0;
+      finalCash[d.value] = 0;
+    });
+    ['totalBatched', 'satispay', 'refunds', 'expectedTotal'].forEach(function(id) {
+      document.getElementById(id).value = '';
+    });
+    renderDenoms('denoms-initial');
+    renderDenoms('denoms-final');
+    goToStep('initial');
+  }
+
+  function init() {
+    renderDenoms('denoms-initial');
+    renderDenoms('denoms-final');
+
+    document.getElementById('btn-go-final').addEventListener('click', function() {
+      renderDenoms('denoms-final');
+      goToStep('final');
+    });
+    document.getElementById('btn-back-initial').addEventListener('click', function() { goToStep('initial'); });
+    document.getElementById('btn-go-summary').addEventListener('click', function() { goToStep('summary'); });
+    document.getElementById('btn-back-final').addEventListener('click', function() { goToStep('final'); });
+    document.getElementById('btn-reset').addEventListener('click', resetAll);
+
+    setupAdjustButton('btn-minus-batched', 'totalBatched', -0.5);
+    setupAdjustButton('btn-plus-batched', 'totalBatched', 0.5);
+    setupAdjustButton('btn-minus-satispay', 'satispay', -0.5);
+    setupAdjustButton('btn-plus-satispay', 'satispay', 0.5);
+    setupAdjustButton('btn-minus-refunds', 'refunds', -0.5);
+    setupAdjustButton('btn-plus-refunds', 'refunds', 0.5);
+    setupAdjustButton('btn-minus-expected', 'expectedTotal', -0.5);
+    setupAdjustButton('btn-plus-expected', 'expectedTotal', 0.5);
+
+    ['totalBatched', 'satispay', 'refunds', 'expectedTotal'].forEach(function(id) {
+      document.getElementById(id).addEventListener('input', recalc);
+    });
+
+    goToStep('initial');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
