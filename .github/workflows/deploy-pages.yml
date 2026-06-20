@@ -29,6 +29,7 @@ jobs:
         run: |
           mkdir -p _site
           cp "Gestione Cassa Oratorio (HTML standalone).html" _site/index.html
+          cp manifest.webmanifest sw.js icon-180.png icon-192.png icon-512.png _site/
 
       - name: Configura Pages (abilita Pages se non attivo)
         uses: actions/configure-pages@v5
