@@ -113,6 +113,26 @@
   .indigo-box .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
   .indigo-box .val { font-size: 22px; font-weight: 700; color: #4f46e5; }
   .hidden { display: none; }
+  .calc-line { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; font-size: 14px; }
+  .calc-line .lbl { color: #374151; }
+  .calc-line .val { font-weight: 600; white-space: nowrap; }
+  .calc-line .val.neg { color: #dc2626; }
+  .calc-line .val.pos { color: #16a34a; }
+  .calc-sub {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 9px 0 4px; margin-top: 4px; border-top: 1px solid #e5e7eb;
+  }
+  .calc-sub .lbl { font-weight: 600; font-size: 15px; }
+  .calc-sub .val { font-weight: 700; font-size: 15px; white-space: nowrap; }
+  .calc-total {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-top: 10px; margin-top: 6px; border-top: 2px solid #d1d5db;
+  }
+  .calc-total .lbl { font-weight: 700; font-size: 16px; }
+  .calc-total .val { font-weight: 700; font-size: 22px; white-space: nowrap; }
+  #vers-importo { color: #4f46e5; }
+  .calc-info { display: flex; justify-content: space-between; align-items: baseline; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #e5e7eb; font-size: 13px; color: #6b7280; }
+  .calc-info .val { font-weight: 600; color: #4b5563; white-space: nowrap; }
   .alert strong { font-weight: 700; }
 </style>
 </head>
@@ -234,13 +254,6 @@
   </div>
 
   <div id="step-summary" class="hidden">
-    <div class="card">
-      <h2>Riepilogo Giornata</h2>
-      <div class="row-line"><span class="lbl">Fondo Cassa Iniziale:</span><span class="val" id="rec-fondo">0,00 EUR</span></div>
-      <div class="row-line"><span class="lbl">Incasso Contanti:</span><span class="val" id="rec-contanti">0,00 EUR</span></div>
-      <div class="row-line noborder"><span class="lbl">Incasso Satispay:</span><span class="val" id="rec-satispay">0,00 EUR</span></div>
-    </div>
-
     <div class="big-income">
       <span class="lbl">INCASSO TOTALE GIORNATA</span>
       <span class="val" id="big-total">0,00 EUR</span>
@@ -250,24 +263,22 @@
 
     <div class="card">
       <h2>Quadratura Cassa</h2>
-      <div class="row-line"><span class="lbl">Contante Atteso in Cassa:</span><span class="val" id="quad-atteso">0,00 EUR</span></div>
-      <div class="field-hint" id="quad-hint" style="margin-top:-6px;margin-bottom:8px;padding-left:4px;">(Fondo + Incasso Contanti - Rimborsi)</div>
-      <div class="row-line"><span class="lbl">Contante Conteggiato:</span><span class="val" id="quad-contato">0,00 EUR</span></div>
-      <div class="row-line noborder"><span class="lbl" style="font-weight:600;">Differenza Contante:</span><span class="val" id="quad-diff">0,00 EUR</span></div>
+      <div class="calc-line"><span class="lbl">Fondo cassa iniziale</span><span class="val pos" id="q-fondo">+ 0,00 EUR</span></div>
+      <div class="calc-line"><span class="lbl">Incasso contanti</span><span class="val pos" id="q-contanti">+ 0,00 EUR</span></div>
+      <div class="calc-line"><span class="lbl">Rimborsi</span><span class="val neg" id="q-rimborsi">- 0,00 EUR</span></div>
+      <div class="calc-sub"><span class="lbl">Contante atteso in cassa</span><span class="val" id="quad-atteso">0,00 EUR</span></div>
+      <div class="calc-line"><span class="lbl">Contante conteggiato</span><span class="val" id="quad-contato">0,00 EUR</span></div>
+      <div class="calc-total"><span class="lbl">Differenza</span><span class="val" id="quad-diff">0,00 EUR</span></div>
       <div id="quad-alerts"></div>
     </div>
 
     <div class="card">
-      <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">Versamento da Effettuare</h3>
-      <div class="row-line"><span class="lbl">Rimborsi Effettuati:</span><span class="val" id="vers-rimborsi" style="color:#dc2626;">0,00 EUR</span></div>
-      <div class="indigo-box">
-        <div class="row">
-          <span style="color:#374151;">Contante da versare:</span>
-          <span class="val" id="vers-importo">0,00 EUR</span>
-        </div>
-        <p style="font-size:13px;color:#6b7280;">Solo l'eccedenza rispetto al fondo cassa</p>
-        <div id="vers-alert"></div>
-      </div>
+      <h2>Versamento</h2>
+      <div class="calc-line"><span class="lbl">Contante conteggiato</span><span class="val" id="v-contato">0,00 EUR</span></div>
+      <div class="calc-line"><span class="lbl">Fondo da lasciare in cassa</span><span class="val neg" id="v-fondo">- 0,00 EUR</span></div>
+      <div class="calc-total"><span class="lbl">Contante da versare</span><span class="val" id="vers-importo">0,00 EUR</span></div>
+      <div id="vers-alert"></div>
+      <div class="calc-info"><span>Incasso Satispay (già sul conto)</span><span class="val" id="v-satispay">0,00 EUR</span></div>
     </div>
 
     <div class="btn-row">
@@ -485,10 +496,11 @@
     setText('sum-totale', fmt(totalSales));
     setText('sum-contante-cont', fmt(finalTotal));
 
-    setText('rec-fondo', fmt(initialTotal));
-    setText('rec-contanti', fmt(cashBatched));
-    setText('rec-satispay', fmt(satispay));
     setText('big-total', fmt(totalSales));
+
+    setText('q-fondo', '+ ' + fmt(initialTotal));
+    setText('q-contanti', '+ ' + fmt(cashBatched));
+    setText('q-rimborsi', '- ' + fmt(refunds));
 
     var verifyContainer = document.getElementById('verify-box-container');
     clearNode(verifyContainer);
@@ -538,14 +550,6 @@
     attesoEl.textContent = fmt(expectedCash);
     attesoEl.style.color = expectedCash < 0 ? '#ea580c' : '#2563eb';
 
-    var quadHintNode = document.getElementById('quad-hint');
-    clearNode(quadHintNode);
-    quadHintNode.appendChild(document.createTextNode('(Fondo + Incasso Contanti - Rimborsi)'));
-    if (expectedCash < 0) {
-      var hintWarn = el('span', { style: 'display:block;color:#ea580c;margin-top:4px;', text: 'I rimborsi superano fondo + incasso contanti' });
-      quadHintNode.appendChild(hintWarn);
-    }
-
     setText('quad-contato', fmt(finalTotal));
     var diffEl = document.getElementById('quad-diff');
     diffEl.textContent = (difference > 0 ? '+' : '') + fmt(difference);
@@ -567,7 +571,9 @@
       alertsContainer.appendChild(buildAlert('green', null, 'Perfetto: tutto quadra!'));
     }
 
-    setText('vers-rimborsi', fmt(refunds));
+    setText('v-contato', fmt(finalTotal));
+    setText('v-fondo', '- ' + fmt(initialTotal));
+    setText('v-satispay', fmt(satispay));
     var versamento = Math.max(0, finalTotal - initialTotal);
     setText('vers-importo', fmt(versamento));
 
