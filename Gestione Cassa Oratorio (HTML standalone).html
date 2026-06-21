@@ -18,7 +18,7 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: linear-gradient(135deg, #eff6ff, #e0e7ff);
     min-height: 100vh;
-    padding: 12px;
+    padding: 12px 12px calc(92px + env(safe-area-inset-bottom));
     color: #1f2937;
   }
   .container { max-width: 480px; margin: 0 auto; }
@@ -142,6 +142,48 @@
   .calc-info { display: flex; justify-content: space-between; align-items: baseline; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #e5e7eb; font-size: 13px; color: #6b7280; }
   .calc-info .val { font-weight: 600; color: #4b5563; white-space: nowrap; }
   .alert strong { font-weight: 700; }
+
+  /* Ordini Sospesi */
+  .fab-suspended {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: calc(14px + env(safe-area-inset-bottom));
+    background: #4f46e5; color: #fff; border: none; border-radius: 26px;
+    padding: 13px 22px; font-size: 15px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 6px 18px rgba(79,70,229,0.4);
+    display: flex; align-items: center; gap: 9px; z-index: 50;
+  }
+  .fab-badge {
+    background: #fff; color: #4f46e5; border-radius: 11px; padding: 1px 8px;
+    font-size: 13px; font-weight: 700; min-width: 22px; text-align: center; line-height: 18px;
+  }
+  .susp-add-row { display: flex; gap: 8px; margin-top: 8px; }
+  .susp-amt-input { width: 100px; flex-shrink: 0; }
+  .btn-add-susp {
+    background: #4f46e5; color: #fff; border: none; border-radius: 8px;
+    padding: 0 18px; font-weight: 700; font-size: 15px; cursor: pointer; flex-shrink: 0;
+  }
+  .susp-list { margin-top: 6px; }
+  .susp-row {
+    display: flex; align-items: center; gap: 11px;
+    padding: 11px 0; border-bottom: 1px solid #e5e7eb;
+  }
+  .susp-check { width: 24px; height: 24px; flex-shrink: 0; accent-color: #16a34a; }
+  .susp-main { flex: 1; min-width: 0; }
+  .susp-text { font-size: 15px; font-weight: 500; word-break: break-word; }
+  .susp-amt { font-size: 13px; color: #6b7280; margin-top: 2px; }
+  .susp-row.done .susp-text { text-decoration: line-through; color: #9ca3af; }
+  .susp-row.done .susp-amt { text-decoration: line-through; }
+  .susp-del {
+    background: #fee2e2; color: #dc2626; border: none; border-radius: 6px;
+    width: 32px; height: 32px; font-size: 20px; line-height: 1; cursor: pointer; flex-shrink: 0;
+  }
+  .susp-summary {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 12px; padding-top: 12px; border-top: 2px solid #d1d5db;
+    font-size: 16px; font-weight: 700;
+  }
+  .susp-summary .val { color: #4f46e5; }
+  .susp-empty { color: #9ca3af; font-size: 14px; text-align: center; padding: 24px 0; }
 </style>
 </head>
 <body>
@@ -294,7 +336,28 @@
       <button class="btn-main btn-success" id="btn-reset" type="button">Nuova Giornata</button>
     </div>
   </div>
+
+  <div id="step-suspended" class="hidden">
+    <div class="card">
+      <h2>Ordini Sospesi</h2>
+      <p class="field-hint">Ordini con scontrino emesso ma pagamento non ancora ricevuto. Questa lista è separata e non influisce sulla cassa.</p>
+      <div class="field" style="margin-top:14px;margin-bottom:0;">
+        <label>Nuovo ordine sospeso</label>
+        <input class="field-input" type="text" id="susp-desc" placeholder="Es. Tavolo 3 - 2 panini e 2 bibite" autocomplete="off">
+        <div class="susp-add-row">
+          <input class="field-input susp-amt-input" type="number" step="0.01" id="susp-amt" placeholder="€ (opz.)">
+          <button class="btn-add-susp" id="btn-add-susp" type="button">Aggiungi</button>
+        </div>
+      </div>
+      <div class="susp-list" id="susp-list"></div>
+    </div>
+    <button class="btn-main btn-secondary" id="btn-close-susp" type="button">Torna alla Cassa</button>
+  </div>
 </div>
+
+<button class="fab-suspended" id="fab-suspended" type="button">
+  📋 Ordini Sospesi <span class="fab-badge" id="fab-badge">0</span>
+</button>
 
 <script>
 (function() {
@@ -468,6 +531,9 @@
     document.getElementById('step-initial').className = step === 'initial' ? '' : 'hidden';
     document.getElementById('step-final').className = step === 'final' ? '' : 'hidden';
     document.getElementById('step-summary').className = step === 'summary' ? '' : 'hidden';
+    document.getElementById('step-suspended').className = 'hidden';
+    document.querySelector('.steps').style.display = '';
+    document.getElementById('fab-suspended').style.display = '';
 
     var order = ['initial', 'final', 'summary'];
     order.forEach(function(s, idx) {
@@ -595,6 +661,130 @@
     }
   }
 
+  /* ---- Ordini Sospesi (lista indipendente, salvata in localStorage) ---- */
+  var SUSP_KEY = 'ordiniSospesi';
+  var suspendedOrders = [];
+  var prevStep = 'initial';
+
+  function loadSuspended() {
+    try {
+      var raw = localStorage.getItem(SUSP_KEY);
+      suspendedOrders = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(suspendedOrders)) suspendedOrders = [];
+    } catch (e) {
+      suspendedOrders = [];
+    }
+  }
+
+  function saveSuspended() {
+    try {
+      localStorage.setItem(SUSP_KEY, JSON.stringify(suspendedOrders));
+    } catch (e) {}
+  }
+
+  function updateSuspBadge() {
+    var pending = suspendedOrders.filter(function(o) { return !o.done; }).length;
+    var badge = document.getElementById('fab-badge');
+    if (badge) {
+      badge.textContent = pending;
+      badge.style.display = pending > 0 ? '' : 'none';
+    }
+  }
+
+  function renderSuspended() {
+    var list = document.getElementById('susp-list');
+    clearNode(list);
+
+    if (!suspendedOrders.length) {
+      list.appendChild(el('div', { className: 'susp-empty', text: 'Nessun ordine sospeso.' }));
+      return;
+    }
+
+    var pendingCount = 0;
+    var pendingTotal = 0;
+
+    suspendedOrders.forEach(function(o) {
+      var row = el('div', { className: 'susp-row' + (o.done ? ' done' : '') });
+
+      var cb = el('input', { type: 'checkbox', className: 'susp-check' });
+      cb.checked = !!o.done;
+      cb.addEventListener('change', function() {
+        o.done = cb.checked;
+        saveSuspended();
+        renderSuspended();
+        updateSuspBadge();
+      });
+
+      var main = el('div', { className: 'susp-main' });
+      main.appendChild(el('div', { className: 'susp-text', text: o.text }));
+      if (o.amount) {
+        main.appendChild(el('div', { className: 'susp-amt', text: fmt(o.amount) }));
+      }
+
+      var del = el('button', { className: 'susp-del', type: 'button', text: '×' });
+      del.addEventListener('click', function() {
+        var i = suspendedOrders.indexOf(o);
+        if (i > -1) {
+          suspendedOrders.splice(i, 1);
+          saveSuspended();
+          renderSuspended();
+          updateSuspBadge();
+        }
+      });
+
+      row.appendChild(cb);
+      row.appendChild(main);
+      row.appendChild(del);
+      list.appendChild(row);
+
+      if (!o.done) {
+        pendingCount++;
+        pendingTotal += (o.amount || 0);
+      }
+    });
+
+    var summary = el('div', { className: 'susp-summary' });
+    summary.appendChild(el('span', { text: pendingCount + (pendingCount === 1 ? ' ordine in attesa' : ' ordini in attesa') }));
+    summary.appendChild(el('span', { className: 'val', text: fmt(pendingTotal) }));
+    list.appendChild(summary);
+  }
+
+  function addSuspended() {
+    var descEl = document.getElementById('susp-desc');
+    var amtEl = document.getElementById('susp-amt');
+    var text = (descEl.value || '').trim();
+    if (!text) {
+      descEl.focus();
+      return;
+    }
+    var amount = parseFloat(amtEl.value);
+    if (isNaN(amount) || amount < 0) amount = 0;
+
+    suspendedOrders.push({ id: Date.now(), text: text, amount: amount, done: false });
+    saveSuspended();
+    descEl.value = '';
+    amtEl.value = '';
+    descEl.focus();
+    renderSuspended();
+    updateSuspBadge();
+  }
+
+  function openSuspended() {
+    prevStep = currentStep;
+    document.getElementById('step-initial').className = 'hidden';
+    document.getElementById('step-final').className = 'hidden';
+    document.getElementById('step-summary').className = 'hidden';
+    document.getElementById('step-suspended').className = '';
+    document.querySelector('.steps').style.display = 'none';
+    document.getElementById('fab-suspended').style.display = 'none';
+    renderSuspended();
+    window.scrollTo(0, 0);
+  }
+
+  function closeSuspended() {
+    goToStep(prevStep);
+  }
+
   function resetAll() {
     denominations.forEach(function(d) {
       initialCash[d.value] = 0;
@@ -625,6 +815,15 @@
 
     ['totalBatched', 'satispay', 'refunds', 'expectedTotal'].forEach(function(id) {
       document.getElementById(id).addEventListener('input', recalc);
+    });
+
+    loadSuspended();
+    updateSuspBadge();
+    document.getElementById('fab-suspended').addEventListener('click', openSuspended);
+    document.getElementById('btn-add-susp').addEventListener('click', addSuspended);
+    document.getElementById('btn-close-susp').addEventListener('click', closeSuspended);
+    document.getElementById('susp-desc').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); addSuspended(); }
     });
 
     goToStep('initial');
