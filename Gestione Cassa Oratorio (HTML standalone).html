@@ -610,7 +610,9 @@
         rowC.appendChild(el('span', { style: 'font-weight:600;', text: 'Differenza:' }));
         rowC.appendChild(el('span', { style: 'font-weight:700;color:#ea580c;', text: (totalSalesDifference > 0 ? '+' : '') + fmt(totalSalesDifference) }));
         detailWrap.appendChild(rowC);
-        detailWrap.appendChild(buildAlert('orange', null, "L'incasso totale non corrisponde. Verifica che tutti i pagamenti siano stati registrati correttamente."));
+        var mancano = totalSalesDifference < 0;
+        var diffMsg = 'Hai dichiarato ' + fmt(expectedTotalSales) + ' di incasso atteso, ma dai pagamenti inseriti (contanti + Satispay) risultano ' + fmt(totalSales) + ': ' + (mancano ? 'mancano ' + fmt(Math.abs(totalSalesDifference)) : 'ci sono ' + fmt(totalSalesDifference) + ' in più') + '. Controlla di aver inserito tutti gli incassi, oppure correggi l\'incasso atteso.';
+        detailWrap.appendChild(buildAlert('orange', null, diffMsg));
       }
       if (ok && Math.abs(difference) >= 0.01) {
         detailWrap.appendChild(buildAlert('blue', null, "L'incasso totale e' corretto! Il problema e' solo nella distribuzione tra contanti e Satispay."));
@@ -639,7 +641,8 @@
       alertsContainer.appendChild(buildAlert('yellow', null, msg1));
       alertsContainer.appendChild(buildAlert('blue', 'Verifica:', "Inserisci l'Incasso Totale Atteso per capire se c'e' davvero un errore o se e' solo dovuto ai rimborsi. Se l'incasso totale quadra, va tutto bene!"));
     } else if (totalSalesDifference !== null && Math.abs(totalSalesDifference) >= 0.01) {
-      alertsContainer.appendChild(buildAlert('red', 'Attenzione:', "L'incasso totale non corrisponde. Verifica gli importi di contanti e Satispay."));
+      var mancanoQ = totalSalesDifference < 0;
+      alertsContainer.appendChild(buildAlert('red', 'Attenzione:', 'incasso atteso ' + fmt(expectedTotalSales) + ' contro ' + fmt(totalSales) + ' inseriti (contanti + Satispay): ' + (mancanoQ ? 'mancano ' + fmt(Math.abs(totalSalesDifference)) : fmt(totalSalesDifference) + ' in più') + '. Verifica gli importi di contanti e Satispay.'));
     }
     if (Math.abs(difference) < 0.01 && (totalSalesDifference === null || Math.abs(totalSalesDifference) < 0.01)) {
       alertsContainer.appendChild(buildAlert('green', null, 'Perfetto: tutto quadra!'));
