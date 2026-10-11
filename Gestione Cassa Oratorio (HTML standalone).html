@@ -132,6 +132,12 @@
   .calc-line .val { font-weight: 600; white-space: nowrap; }
   .calc-line .val.neg { color: #dc2626; }
   .calc-line .val.pos { color: #16a34a; }
+  .inc-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; }
+  .inc-row { display: flex; justify-content: space-between; align-items: baseline; padding: 3px 0; font-size: 14px; }
+  .inc-row .val { font-weight: 600; white-space: nowrap; color: #166534; }
+  .inc-row.main .lbl { font-weight: 700; color: #1f2937; }
+  .inc-row.main .val { font-weight: 700; font-size: 15px; }
+  .inc-row.sub { padding-left: 14px; color: #4b5563; }
   .calc-sub {
     display: flex; justify-content: space-between; align-items: baseline;
     padding: 9px 0 4px; margin-top: 4px; border-top: 1px solid #e5e7eb;
@@ -151,7 +157,9 @@
   }
   .vers-highlight .lbl { font-weight: 700; font-size: 16px; color: #3730a3; }
   .vers-highlight .val { font-weight: 700; font-size: 24px; color: #4f46e5; white-space: nowrap; }
-  .calc-total .lbl small { display: block; font-size: 12px; font-weight: 500; color: #6b7280; }
+  .vers-highlight .lbl small { display: block; font-size: 12px; font-weight: 500; color: #6366f1; }
+  .vers-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0 5px 14px; font-size: 14px; color: #374151; }
+  .vers-row .val { font-weight: 600; white-space: nowrap; color: #1f2937; }
   .calc-info { display: flex; justify-content: space-between; align-items: baseline; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #e5e7eb; font-size: 13px; color: #6b7280; }
   .calc-info .val { font-weight: 600; color: #4b5563; white-space: nowrap; }
   .alert strong { font-weight: 700; }
@@ -326,9 +334,13 @@
 
     <div class="card">
       <h2>Quadratura Cassa</h2>
+      <div class="inc-box">
+        <div class="inc-row main"><span class="lbl">Incasso totale dal registratore di cassa</span><span class="val" id="q-totale">0,00 EUR</span></div>
+        <div class="inc-row sub"><span class="lbl">di cui Satispay (incasso elettronico)</span><span class="val" id="q-satispay">0,00 EUR</span></div>
+        <div class="inc-row sub"><span class="lbl">di cui contanti</span><span class="val" id="q-inc-contanti">0,00 EUR</span></div>
+      </div>
       <div class="calc-line"><span class="lbl">Fondo cassa iniziale</span><span class="val pos" id="q-fondo">+ 0,00 EUR</span></div>
-      <div class="calc-line"><span class="lbl">Incasso totale dal registratore di cassa</span><span class="val pos" id="q-totale">+ 0,00 EUR</span></div>
-      <div class="calc-line"><span class="lbl">Satispay</span><span class="val neg" id="q-satispay">- 0,00 EUR</span></div>
+      <div class="calc-line"><span class="lbl">Incasso contanti</span><span class="val pos" id="q-contanti">+ 0,00 EUR</span></div>
       <div class="calc-line"><span class="lbl">Rimborsi</span><span class="val neg" id="q-rimborsi">- 0,00 EUR</span></div>
       <div class="calc-sub"><span class="lbl">Contante atteso in cassa</span><span class="val" id="quad-atteso">0,00 EUR</span></div>
       <div class="calc-line"><span class="lbl">Contante conteggiato</span><span class="val" id="quad-contato">0,00 EUR</span></div>
@@ -338,9 +350,9 @@
 
     <div class="card">
       <h2>Versamento</h2>
-      <div class="calc-line"><span class="lbl">Fondo cassa</span><span class="val" id="v-fondo">0,00 EUR</span></div>
-      <div class="vers-highlight"><span class="lbl">Incasso da versare</span><span class="val" id="vers-incasso">0,00 EUR</span></div>
-      <div class="calc-total"><span class="lbl">Totale da versare<small>tutto il contante in cassa</small></span><span class="val" id="vers-totale">0,00 EUR</span></div>
+      <div class="vers-highlight"><span class="lbl">Versamento totale<small>tutto il contante in cassa</small></span><span class="val" id="vers-totale">0,00 EUR</span></div>
+      <div class="vers-row"><span class="lbl">di cui fondo cassa</span><span class="val" id="v-fondo">0,00 EUR</span></div>
+      <div class="vers-row"><span class="lbl">di cui contanti dall'incasso delle vendite</span><span class="val" id="vers-incasso">0,00 EUR</span></div>
       <div id="vers-alert"></div>
       <div class="calc-info"><span>Satispay (già sul conto)</span><span class="val" id="v-satispay">0,00 EUR</span></div>
     </div>
@@ -609,9 +621,13 @@
 
     setText('big-total', fmt(registerTotal));
 
+    // Il Satispay e' un incasso (elettronico): non finisce nel cassetto, quindi
+    // nel conto del contante entra solo la parte in contanti dell'incasso.
+    setText('q-totale', fmt(registerTotal));
+    setText('q-satispay', fmt(satispay));
+    setText('q-inc-contanti', fmt(cashIncome));
     setText('q-fondo', '+ ' + fmt(initialTotal));
-    setText('q-totale', '+ ' + fmt(registerTotal));
-    setText('q-satispay', '- ' + fmt(satispay));
+    setText('q-contanti', (cashIncome < 0 ? '- ' : '+ ') + fmt(Math.abs(cashIncome)));
     setText('q-rimborsi', '- ' + fmt(refunds));
 
     // Registratore vs realta': se il dettaglio battuto non torna ma la cassa quadra,
@@ -928,19 +944,22 @@
         : fmt(Math.abs(methodDiff)) + ' battuti come Satispay ma pagati in contanti (errore di battitura).') + '</div>';
     }
 
+    var cashIncome = registerTotal - satispay;
     h += prSection('Quadratura Cassa');
-    h += prRow('Fondo cassa iniziale', '+ ' + fmt(initialTotal));
-    h += prRow('Incasso totale dal registratore di cassa', '+ ' + fmt(registerTotal));
-    h += prRow('Satispay', '- ' + fmt(satispay));
+    h += prRow('Incasso totale dal registratore di cassa', fmt(registerTotal), { strong: true });
+    h += prRow('di cui Satispay (incasso elettronico)', fmt(satispay));
+    h += prRow('di cui contanti', fmt(cashIncome));
+    h += prRow('Fondo cassa iniziale', '+ ' + fmt(initialTotal), { top: true });
+    h += prRow('Incasso contanti', (cashIncome < 0 ? '- ' : '+ ') + fmt(Math.abs(cashIncome)));
     h += prRow('Rimborsi', '- ' + fmt(refunds));
     h += prRow('Contante atteso in cassa', fmt(expectedCash), { strong: true, top: true });
     h += prRow('Contante conteggiato', fmt(finalTotal));
     h += prRow('Differenza', (difference > 0 ? '+' : '') + fmt(difference), { strong: true, big: true, top: true, color: Math.abs(difference) < 0.01 ? '#16a34a' : '#dc2626' });
 
     h += prSection('Versamento');
-    h += prRow('Fondo cassa', fmt(initialTotal));
-    h += prRow('Incasso da versare', fmt(finalTotal - initialTotal), { strong: true, big: true, color: '#4f46e5' });
-    h += prRow('Totale da versare (tutto il contante in cassa)', fmt(finalTotal), { strong: true, top: true });
+    h += prRow('Versamento totale (tutto il contante in cassa)', fmt(finalTotal), { strong: true, big: true, color: '#4f46e5' });
+    h += prRow('di cui fondo cassa', fmt(initialTotal));
+    h += prRow("di cui contanti dall'incasso delle vendite", fmt(finalTotal - initialTotal));
     h += prRow('Satispay (già sul conto)', fmt(satispay), { noborder: true, color: '#6b7280' });
 
     var pending = suspendedOrders.filter(function(o) { return !o.done; });
