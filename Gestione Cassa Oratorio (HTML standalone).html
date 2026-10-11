@@ -144,7 +144,14 @@
   }
   .calc-total .lbl { font-weight: 700; font-size: 16px; }
   .calc-total .val { font-weight: 700; font-size: 22px; white-space: nowrap; }
-  #vers-importo { color: #4f46e5; }
+  .vers-highlight {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+    background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px;
+    padding: 10px 12px; margin: 6px 0 4px;
+  }
+  .vers-highlight .lbl { font-weight: 700; font-size: 16px; color: #3730a3; }
+  .vers-highlight .val { font-weight: 700; font-size: 24px; color: #4f46e5; white-space: nowrap; }
+  .calc-total .lbl small { display: block; font-size: 12px; font-weight: 500; color: #6b7280; }
   .calc-info { display: flex; justify-content: space-between; align-items: baseline; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #e5e7eb; font-size: 13px; color: #6b7280; }
   .calc-info .val { font-weight: 600; color: #4b5563; white-space: nowrap; }
   .alert strong { font-weight: 700; }
@@ -331,11 +338,11 @@
 
     <div class="card">
       <h2>Versamento</h2>
-      <div class="calc-line"><span class="lbl">Contante conteggiato</span><span class="val" id="v-contato">0,00 EUR</span></div>
-      <div class="calc-line"><span class="lbl">Fondo da lasciare in cassa</span><span class="val neg" id="v-fondo">- 0,00 EUR</span></div>
-      <div class="calc-total"><span class="lbl">Contante da versare</span><span class="val" id="vers-importo">0,00 EUR</span></div>
+      <div class="calc-line"><span class="lbl">Fondo cassa</span><span class="val" id="v-fondo">0,00 EUR</span></div>
+      <div class="vers-highlight"><span class="lbl">Incasso da versare</span><span class="val" id="vers-incasso">0,00 EUR</span></div>
+      <div class="calc-total"><span class="lbl">Totale da versare<small>tutto il contante in cassa</small></span><span class="val" id="vers-totale">0,00 EUR</span></div>
       <div id="vers-alert"></div>
-      <div class="calc-info"><span>Incasso Satispay (già sul conto)</span><span class="val" id="v-satispay">0,00 EUR</span></div>
+      <div class="calc-info"><span>Satispay (già sul conto)</span><span class="val" id="v-satispay">0,00 EUR</span></div>
     </div>
 
     <button class="btn-main" id="btn-pdf" type="button" style="background:#4f46e5;">📄 Scarica Resoconto PDF</button>
@@ -697,19 +704,21 @@
       }
     }
 
-    setText('v-contato', fmt(finalTotal));
-    setText('v-fondo', '- ' + fmt(initialTotal));
+    // Si versa tutto il contante in cassa: fondo + incasso in contanti
+    var cashToDeposit = finalTotal - initialTotal;
+    setText('v-fondo', fmt(initialTotal));
+    setText('vers-incasso', fmt(cashToDeposit));
+    setText('vers-totale', fmt(finalTotal));
     setText('v-satispay', fmt(satispay));
-    var versamento = Math.max(0, finalTotal - initialTotal);
-    setText('vers-importo', fmt(versamento));
+    document.getElementById('vers-incasso').style.color = cashToDeposit < -0.005 ? '#dc2626' : '';
 
     var versAlertNode = document.getElementById('vers-alert');
     clearNode(versAlertNode);
-    if ((finalTotal - initialTotal) <= 0 && finalTotal >= 0) {
-      versAlertNode.appendChild(buildAlert('blue', null, 'Nessun versamento da fare. I rimborsi hanno assorbito gli incassi.'));
-    }
-    if (finalTotal < 0) {
-      versAlertNode.appendChild(buildAlert('orange', 'Attenzione:', 'la cassa e\' in negativo. Devi aggiungere ' + fmt(Math.abs(finalTotal)) + ' per ripristinare almeno a zero.'));
+    if (cashToDeposit < -0.005) {
+      versAlertNode.appendChild(buildAlert('orange', 'Attenzione:', 'il contante in cassa (' + fmt(finalTotal) + ') è inferiore al fondo (' + fmt(initialTotal) +
+        '): l\'incasso in contanti risulta negativo. Controlla il conteggio e la quadratura.'));
+    } else if (Math.abs(cashToDeposit) < 0.01 && finalTotal > 0) {
+      versAlertNode.appendChild(buildAlert('blue', null, 'Nessun incasso in contanti oggi: si versa solo il fondo cassa.'));
     }
   }
 
@@ -886,7 +895,6 @@
     var realCash = finalTotal - initialTotal + refunds;
     var realTotal = realCash + satispay;
     var methodDiff = satispay - satispayReceipt;
-    var versamento = Math.max(0, finalTotal - initialTotal);
 
     var dateStr = fmtDateIT(document.getElementById('report-date').value) || '—';
 
@@ -930,10 +938,10 @@
     h += prRow('Differenza', (difference > 0 ? '+' : '') + fmt(difference), { strong: true, big: true, top: true, color: Math.abs(difference) < 0.01 ? '#16a34a' : '#dc2626' });
 
     h += prSection('Versamento');
-    h += prRow('Contante conteggiato', fmt(finalTotal));
-    h += prRow('Fondo da lasciare in cassa', '- ' + fmt(initialTotal));
-    h += prRow('Contante da versare', fmt(versamento), { strong: true, big: true, top: true, color: '#4f46e5' });
-    h += prRow('Incasso Satispay (già sul conto)', fmt(satispay), { noborder: true, color: '#6b7280' });
+    h += prRow('Fondo cassa', fmt(initialTotal));
+    h += prRow('Incasso da versare', fmt(finalTotal - initialTotal), { strong: true, big: true, color: '#4f46e5' });
+    h += prRow('Totale da versare (tutto il contante in cassa)', fmt(finalTotal), { strong: true, top: true });
+    h += prRow('Satispay (già sul conto)', fmt(satispay), { noborder: true, color: '#6b7280' });
 
     var pending = suspendedOrders.filter(function(o) { return !o.done; });
     if (pending.length) {
