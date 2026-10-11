@@ -259,6 +259,7 @@
         <span class="label">Totale:</span>
         <span class="value" id="total-final">0,00 EUR</span>
       </div>
+      <p class="field-error" id="err-final-count" hidden>Inserisci le banconote e le monete contate in cassa a fine giornata: senza il conteggio la quadratura non è possibile.</p>
     </div>
 
     <div class="card">
@@ -636,6 +637,13 @@
     return REQUIRED_FIELDS.filter(function(id) { return !hasValue(id); });
   }
 
+  // Conteggio finale a zero quando in cassa dovrebbero esserci dei soldi
+  // (fondo + contanti incassati - rimborsi > 0): il conteggio non e' stato fatto.
+  function finalCountMissing() {
+    var expected = sumCash(initialCash) + getNum('registerTotal') - getNum('satispay') - getNum('refunds');
+    return sumCash(finalCash) === 0 && expected > 0.005;
+  }
+
   function isOff(a, b) { return Math.abs(a - b) >= 0.01; }
 
   function recalc() {
@@ -649,6 +657,7 @@
     REQUIRED_FIELDS.forEach(function(id) {
       if (hasValue(id)) showFieldError(id, false);
     });
+    if (finalTotal > 0) document.getElementById('err-final-count').hidden = true;
     var complete = missingRequired().length === 0;
 
     // La quadratura usa il totale dello scontrino e il Satispay reale dell'app:
@@ -972,6 +981,10 @@
     h += prRow('Incasso Totale', fmt(registerTotal), { strong: true });
     h += prRow('di cui Contanti', fmt(cashBatched));
     h += prRow('di cui Satispay / elettronico', fmt(satispayReceipt));
+    if (isOff(cashBatched + satispayReceipt, registerTotal)) {
+      h += '<div style="font-size:12px;color:#dc2626;margin-top:4px;">' + escHtml('Attenzione: contanti + Satispay dello scontrino = ' +
+        fmt(cashBatched + satispayReceipt) + ', diverso dal totale ' + fmt(registerTotal) + '. Verificare i numeri dello scontrino.') + '</div>';
+    }
 
     h += prSection('Incassato Davvero');
     h += prRow('Satispay (dall\'app)', fmt(satispay));
@@ -1034,6 +1047,7 @@
       document.getElementById(id).value = '';
     });
     REQUIRED_FIELDS.forEach(function(id) { showFieldError(id, false); });
+    document.getElementById('err-final-count').hidden = true;
     document.getElementById('report-date').value = todayIso();
     renderDenoms('denoms-initial');
     renderDenoms('denoms-final');
@@ -1051,8 +1065,14 @@
     document.getElementById('btn-back-initial').addEventListener('click', function() { goToStep('initial'); });
     document.getElementById('btn-go-summary').addEventListener('click', function() {
       var missing = missingRequired();
+      missing.forEach(function(id) { showFieldError(id, true); });
+      var countMissing = finalCountMissing();
+      document.getElementById('err-final-count').hidden = !countMissing;
+      if (countMissing) {
+        document.getElementById('denoms-final').scrollIntoView({ block: 'start' });
+        return;
+      }
       if (missing.length) {
-        missing.forEach(function(id) { showFieldError(id, true); });
         var field = document.getElementById(missing[0]);
         field.scrollIntoView({ block: 'center' });
         field.focus();
