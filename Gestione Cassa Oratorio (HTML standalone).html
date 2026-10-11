@@ -74,14 +74,6 @@
   .field-input {
     width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 16px; min-width: 0;
   }
-  .quick-row { display: flex; flex-wrap: nowrap; gap: 5px; margin-top: 8px; }
-  .quick-btn {
-    flex: 1 1 0; min-width: 0; padding: 9px 2px; border-radius: 8px; border: none;
-    font-weight: 700; font-size: 14px; cursor: pointer; user-select: none; white-space: nowrap;
-  }
-  .quick-add { background: #dcfce7; color: #16a34a; }
-  .quick-sub { background: #fee2e2; color: #dc2626; }
-  .quick-clear { background: #e5e7eb; color: #4b5563; }
   .summary-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; margin-bottom: 16px; }
   .summary-line { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
   .summary-line.bold { font-weight: 700; border-top: 1px solid #bfdbfe; margin-top: 6px; padding-top: 8px; }
@@ -268,49 +260,19 @@
         <h3>🧾 Dal registratore di cassa (chiusura)</h3>
         <div class="field">
           <label>Incasso Totale <span class="req">*</span></label>
-          <input class="field-input field-main" type="number" step="0.01" id="registerTotal" placeholder="0.00" data-required>
-          <div class="quick-row" data-target="registerTotal">
-            <button type="button" class="quick-btn quick-sub" data-amt="-10">−10</button>
-            <button type="button" class="quick-btn quick-sub" data-amt="-1">−1</button>
-            <button type="button" class="quick-btn quick-sub" data-amt="-0.1">−0,10</button>
-            <button type="button" class="quick-btn quick-add" data-amt="0.1">+0,10</button>
-            <button type="button" class="quick-btn quick-add" data-amt="0.5">+0,50</button>
-            <button type="button" class="quick-btn quick-add" data-amt="1">+1</button>
-            <button type="button" class="quick-btn quick-add" data-amt="10">+10</button>
-            <button type="button" class="quick-btn quick-clear" data-amt="clear">C</button>
-          </div>
+          <input class="field-input field-main" type="text" inputmode="decimal" autocomplete="off" id="registerTotal" placeholder="0,00">
           <p class="field-hint">Il totale della giornata indicato dal registratore di cassa alla chiusura.</p>
           <p class="field-error" id="err-registerTotal" hidden>Inserisci l'incasso totale del registratore di cassa.</p>
         </div>
         <div class="field">
           <label>di cui Contanti <span class="req">*</span></label>
-          <input class="field-input" type="number" step="0.01" id="totalBatched" placeholder="0.00" data-required>
-          <div class="quick-row" data-target="totalBatched">
-            <button type="button" class="quick-btn quick-sub" data-amt="-10">−10</button>
-            <button type="button" class="quick-btn quick-sub" data-amt="-1">−1</button>
-            <button type="button" class="quick-btn quick-sub" data-amt="-0.1">−0,10</button>
-            <button type="button" class="quick-btn quick-add" data-amt="0.1">+0,10</button>
-            <button type="button" class="quick-btn quick-add" data-amt="0.5">+0,50</button>
-            <button type="button" class="quick-btn quick-add" data-amt="1">+1</button>
-            <button type="button" class="quick-btn quick-add" data-amt="10">+10</button>
-            <button type="button" class="quick-btn quick-clear" data-amt="clear">C</button>
-          </div>
+          <input class="field-input" type="text" inputmode="decimal" autocomplete="off" id="totalBatched" placeholder="0,00">
           <p class="field-hint">I contanti battuti, come riportati dal registratore di cassa.</p>
           <p class="field-error" id="err-totalBatched" hidden>Inserisci i contanti del registratore di cassa (0 se non ce ne sono).</p>
         </div>
         <div class="field">
           <label>di cui Satispay / elettronico <span class="req">*</span></label>
-          <input class="field-input" type="number" step="0.01" id="satispayReceipt" placeholder="0.00" data-required>
-          <div class="quick-row" data-target="satispayReceipt">
-            <button type="button" class="quick-btn quick-sub" data-amt="-10">−10</button>
-            <button type="button" class="quick-btn quick-sub" data-amt="-1">−1</button>
-            <button type="button" class="quick-btn quick-sub" data-amt="-0.1">−0,10</button>
-            <button type="button" class="quick-btn quick-add" data-amt="0.1">+0,10</button>
-            <button type="button" class="quick-btn quick-add" data-amt="0.5">+0,50</button>
-            <button type="button" class="quick-btn quick-add" data-amt="1">+1</button>
-            <button type="button" class="quick-btn quick-add" data-amt="10">+10</button>
-            <button type="button" class="quick-btn quick-clear" data-amt="clear">C</button>
-          </div>
+          <input class="field-input" type="text" inputmode="decimal" autocomplete="off" id="satispayReceipt" placeholder="0,00">
           <p class="field-hint">I pagamenti elettronici battuti, come riportati dal registratore di cassa.</p>
           <p class="field-error" id="err-satispayReceipt" hidden>Inserisci il Satispay del registratore di cassa (0 se non ce ne sono).</p>
         </div>
@@ -320,17 +282,7 @@
         <h3>📱 Dal cellulare</h3>
         <div class="field">
           <label>Incasso Satispay reale (app Satispay) <span class="req">*</span></label>
-          <input class="field-input" type="number" step="0.01" id="satispay" placeholder="0.00" data-required>
-          <div class="quick-row" data-target="satispay">
-            <button type="button" class="quick-btn quick-sub" data-amt="-10">−10</button>
-            <button type="button" class="quick-btn quick-sub" data-amt="-1">−1</button>
-            <button type="button" class="quick-btn quick-sub" data-amt="-0.1">−0,10</button>
-            <button type="button" class="quick-btn quick-add" data-amt="0.1">+0,10</button>
-            <button type="button" class="quick-btn quick-add" data-amt="0.5">+0,50</button>
-            <button type="button" class="quick-btn quick-add" data-amt="1">+1</button>
-            <button type="button" class="quick-btn quick-add" data-amt="10">+10</button>
-            <button type="button" class="quick-btn quick-clear" data-amt="clear">C</button>
-          </div>
+          <input class="field-input" type="text" inputmode="decimal" autocomplete="off" id="satispay" placeholder="0,00">
           <p class="field-hint">Quanto è arrivato davvero su Satispay, come risulta dall'app. È questo che conta per la quadratura. Se nessuno ha pagato con Satispay, scrivi 0.</p>
           <p class="field-error" id="err-satispay" hidden>Inserisci l'incasso Satispay dall'app (0 se non ce ne sono).</p>
         </div>
@@ -339,17 +291,7 @@
       <div class="src-section">
         <div class="field">
           <label>Rimborsi</label>
-          <input class="field-input" type="number" step="0.01" id="refunds" placeholder="0.00">
-          <div class="quick-row" data-target="refunds">
-            <button type="button" class="quick-btn quick-sub" data-amt="-10">−10</button>
-            <button type="button" class="quick-btn quick-sub" data-amt="-1">−1</button>
-            <button type="button" class="quick-btn quick-sub" data-amt="-0.1">−0,10</button>
-            <button type="button" class="quick-btn quick-add" data-amt="0.1">+0,10</button>
-            <button type="button" class="quick-btn quick-add" data-amt="0.5">+0,50</button>
-            <button type="button" class="quick-btn quick-add" data-amt="1">+1</button>
-            <button type="button" class="quick-btn quick-add" data-amt="10">+10</button>
-            <button type="button" class="quick-btn quick-clear" data-amt="clear">C</button>
-          </div>
+          <input class="field-input" type="text" inputmode="decimal" autocomplete="off" id="refunds" placeholder="0,00">
         </div>
       </div>
 
@@ -378,8 +320,8 @@
     <div class="card">
       <h2>Quadratura Cassa</h2>
       <div class="calc-line"><span class="lbl">Fondo cassa iniziale</span><span class="val pos" id="q-fondo">+ 0,00 EUR</span></div>
-      <div class="calc-line"><span class="lbl">Incasso totale (registratore di cassa)</span><span class="val pos" id="q-totale">+ 0,00 EUR</span></div>
-      <div class="calc-line"><span class="lbl">Incasso Satispay (non in cassa)</span><span class="val neg" id="q-satispay">- 0,00 EUR</span></div>
+      <div class="calc-line"><span class="lbl">Incasso totale dal registratore di cassa</span><span class="val pos" id="q-totale">+ 0,00 EUR</span></div>
+      <div class="calc-line"><span class="lbl">Satispay</span><span class="val neg" id="q-satispay">- 0,00 EUR</span></div>
       <div class="calc-line"><span class="lbl">Rimborsi</span><span class="val neg" id="q-rimborsi">- 0,00 EUR</span></div>
       <div class="calc-sub"><span class="lbl">Contante atteso in cassa</span><span class="val" id="quad-atteso">0,00 EUR</span></div>
       <div class="calc-line"><span class="lbl">Contante conteggiato</span><span class="val" id="quad-contato">0,00 EUR</span></div>
@@ -541,38 +483,19 @@
     return sum;
   }
 
-  function getNum(id) {
-    var node = document.getElementById(id);
-    var v = node ? parseFloat(node.value) : NaN;
-    return isNaN(v) ? 0 : v;
+  // Importo scritto a mano: accetta "12,50", "12.50" e "1.234,50" (punto delle
+  // migliaia). Restituisce NaN se il testo non e' un importo valido.
+  function parseAmount(raw) {
+    var t = String(raw || '').replace(/[\s€]/g, '');
+    if (t.indexOf(',') !== -1) t = t.replace(/\./g, '').replace(',', '.');
+    if (t === '' || !/^\d*\.?\d*$/.test(t) || t === '.') return NaN;
+    return Math.round(Number(t) * 100) / 100;
   }
 
-  function setupQuickButtons() {
-    var rows = document.querySelectorAll('.quick-row');
-    Array.prototype.forEach.call(rows, function(row) {
-      var targetId = row.getAttribute('data-target');
-      row.addEventListener('click', function(e) {
-        var btn = e.target;
-        while (btn && btn !== row && btn.tagName !== 'BUTTON') {
-          btn = btn.parentNode;
-        }
-        if (!btn || btn.tagName !== 'BUTTON') return;
-        var field = document.getElementById(targetId);
-        var amtAttr = btn.getAttribute('data-amt');
-        if (amtAttr === 'clear') {
-          field.value = '';
-          recalc();
-          return;
-        }
-        var current = parseFloat(field.value) || 0;
-        var next = current + (parseFloat(amtAttr) || 0);
-        if (next < 0) next = 0;
-        next = Math.round(next * 100) / 100;
-        // Nei campi obbligatori lo 0 e' un valore inserito, non un campo vuoto
-        field.value = (next === 0 && !field.hasAttribute('data-required')) ? '' : String(next);
-        recalc();
-      });
-    });
+  function getNum(id) {
+    var node = document.getElementById(id);
+    var v = node ? parseAmount(node.value) : NaN;
+    return isNaN(v) ? 0 : v;
   }
 
   function setText(id, text) {
@@ -622,7 +545,7 @@
 
   function hasValue(id) {
     var node = document.getElementById(id);
-    return !!node && node.value !== '';
+    return !!node && !isNaN(parseAmount(node.value));
   }
 
   // Campi da compilare prima di vedere la quadratura (0 e' un valore valido)
@@ -999,8 +922,8 @@
 
     h += prSection('Quadratura Cassa');
     h += prRow('Fondo cassa iniziale', '+ ' + fmt(initialTotal));
-    h += prRow('Incasso totale (registratore di cassa)', '+ ' + fmt(registerTotal));
-    h += prRow('Incasso Satispay (non in cassa)', '- ' + fmt(satispay));
+    h += prRow('Incasso totale dal registratore di cassa', '+ ' + fmt(registerTotal));
+    h += prRow('Satispay', '- ' + fmt(satispay));
     h += prRow('Rimborsi', '- ' + fmt(refunds));
     h += prRow('Contante atteso in cassa', fmt(expectedCash), { strong: true, top: true });
     h += prRow('Contante conteggiato', fmt(finalTotal));
@@ -1082,8 +1005,6 @@
     });
     document.getElementById('btn-back-final').addEventListener('click', function() { goToStep('final'); });
     document.getElementById('btn-reset').addEventListener('click', resetAll);
-
-    setupQuickButtons();
 
     ['registerTotal', 'totalBatched', 'satispayReceipt', 'satispay', 'refunds'].forEach(function(id) {
       document.getElementById(id).addEventListener('input', recalc);
