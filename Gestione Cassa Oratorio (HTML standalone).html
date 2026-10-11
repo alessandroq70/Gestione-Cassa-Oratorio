@@ -164,15 +164,21 @@
   .calc-info .val { font-weight: 600; color: #4b5563; white-space: nowrap; }
   .alert strong { font-weight: 700; }
 
-  /* Ordini Sospesi */
-  .fab-suspended {
+  [hidden] { display: none !important; }
+
+  /* Pulsanti fissi in basso: Scontrini e Ordini Sospesi */
+  .fab-bar {
     position: fixed; left: 50%; transform: translateX(-50%);
     bottom: calc(14px + env(safe-area-inset-bottom));
-    background: #4f46e5; color: #fff; border: none; border-radius: 26px;
-    padding: 13px 22px; font-size: 15px; font-weight: 700; cursor: pointer;
-    box-shadow: 0 6px 18px rgba(79,70,229,0.4);
-    display: flex; align-items: center; gap: 9px; z-index: 50; white-space: nowrap;
+    display: flex; gap: 8px; z-index: 50;
   }
+  .fab-btn {
+    background: #4f46e5; color: #fff; border: none; border-radius: 26px;
+    padding: 12px 16px; font-size: 15px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 6px 18px rgba(79,70,229,0.4);
+    display: flex; align-items: center; gap: 8px; white-space: nowrap;
+  }
+  .fab-btn.fab-register { background: #0f766e; box-shadow: 0 6px 18px rgba(15,118,110,0.4); }
   .fab-badge {
     background: #fff; color: #4f46e5; border-radius: 11px; padding: 1px 8px;
     font-size: 13px; font-weight: 700; min-width: 22px; text-align: center; line-height: 18px;
@@ -206,6 +212,80 @@
   .susp-summary .val { color: #4f46e5; }
   .susp-empty { color: #9ca3af; font-size: 14px; text-align: center; padding: 24px 0; }
 
+  /* Battitura scontrini */
+  .reg-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .reg-head h2 { margin-bottom: 0; }
+  .reg-small {
+    background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; border-radius: 8px;
+    padding: 7px 12px; font-weight: 600; font-size: 13px; cursor: pointer; white-space: nowrap;
+  }
+  .prod-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .prod-btn {
+    background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 10px; padding: 10px 6px; min-height: 62px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 3px;
+    cursor: pointer; font-family: inherit; user-select: none;
+  }
+  .prod-btn:active { background: #c7d2fe; }
+  .prod-btn .pn { font-weight: 700; font-size: 14px; color: #1f2937; text-align: center; word-break: break-word; }
+  .prod-btn .pp { font-size: 13px; font-weight: 600; color: #4f46e5; }
+  .free-amount { display: flex; gap: 8px; margin-top: 12px; }
+  .free-amount .field-input { flex: 1; }
+  .listino-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .listino-row .lname { flex: 1; }
+  .listino-row .lprice { width: 92px; flex-shrink: 0; }
+  .cart-line { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e5e7eb; }
+  .cart-name { flex: 1; min-width: 0; font-size: 15px; font-weight: 500; word-break: break-word; }
+  .cart-name small { display: block; font-size: 12px; font-weight: 400; color: #6b7280; }
+  .cart-qty { display: flex; align-items: center; gap: 6px; }
+  .cart-q { min-width: 20px; text-align: center; font-weight: 700; }
+  .cart-sum { width: 82px; text-align: right; font-weight: 600; white-space: nowrap; }
+  .cart-total {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-top: 8px; padding-top: 10px; border-top: 2px solid #d1d5db; font-weight: 700;
+  }
+  .cart-total .lbl { font-size: 17px; }
+  .cart-total .val { font-size: 26px; color: #0f766e; white-space: nowrap; }
+  .pay-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+  .pay-btn {
+    border: none; border-radius: 10px; padding: 9px 4px; font-size: 14px; font-weight: 700;
+    color: #fff; cursor: pointer; font-family: inherit;
+    display: flex; flex-direction: column; align-items: center; gap: 2px; line-height: 1.2;
+  }
+  .pay-btn .pi { font-size: 20px; line-height: 1; }
+  .pay-btn:disabled { opacity: 0.35; cursor: default; }
+  .pay-cash { background: #16a34a; }
+  .pay-satis { background: #e11d48; }
+  .pay-unpaid { background: #d97706; }
+  .pay-panel { margin-top: 12px; padding: 12px; border-radius: 10px; background: #f9fafb; border: 1px solid #e5e7eb; }
+  .pay-panel label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #374151; }
+  .note-row { display: flex; gap: 6px; margin-top: 8px; }
+  .note-btn {
+    flex: 1 1 0; min-width: 0; padding: 10px 2px; border-radius: 8px; border: 1px solid #86efac;
+    background: #fff; color: #166534; font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit;
+  }
+  .change-line { display: flex; justify-content: space-between; align-items: baseline; margin: 12px 0; font-size: 16px; font-weight: 600; }
+  .change-line .val { font-size: 22px; font-weight: 700; white-space: nowrap; }
+  .reg-clear { background: none; border: none; color: #dc2626; font-weight: 600; font-size: 14px; margin-top: 12px; padding: 4px 0; cursor: pointer; }
+  .reg-clear:disabled { color: #d1d5db; cursor: default; }
+  .reg-sub { font-size: 15px; font-weight: 700; margin: 14px 0 4px; color: #374151; }
+  .journal-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #e5e7eb; }
+  .journal-main { flex: 1; min-width: 0; }
+  .journal-top { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; font-weight: 600; }
+  .journal-top span:last-child { white-space: nowrap; }
+  .journal-items { font-size: 12px; color: #6b7280; margin-top: 2px; word-break: break-word; }
+  .journal-row.cancelled .journal-top, .journal-row.cancelled .journal-items { text-decoration: line-through; color: #9ca3af; }
+  .journal-void { color: #dc2626; font-weight: 700; font-size: 12px; flex-shrink: 0; }
+  .journal-cancel {
+    background: #fee2e2; color: #dc2626; border: none; border-radius: 6px; padding: 7px 10px;
+    font-weight: 600; font-size: 12px; cursor: pointer; flex-shrink: 0; font-family: inherit;
+  }
+  .toast {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: calc(78px + env(safe-area-inset-bottom)); z-index: 60;
+    background: #1f2937; color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 14px;
+    max-width: calc(100% - 32px); width: max-content; text-align: center; box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  }
+
   .header-date-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
   .header-date-row label { font-size: 13px; font-weight: 600; color: #6b7280; }
   .header-date {
@@ -217,7 +297,7 @@
   #print-report { display: none; }
   @media print {
     body { background: #fff !important; padding: 0 !important; }
-    .container, .fab-suspended { display: none !important; }
+    .container, .fab-bar, .toast { display: none !important; }
     #print-report { display: block !important; }
   }
   @page { margin: 1.4cm; }
@@ -381,11 +461,84 @@
     </div>
     <button class="btn-main btn-secondary" id="btn-close-susp" type="button">Torna alla Cassa</button>
   </div>
+
+  <div id="step-register" class="hidden">
+    <div class="card">
+      <div class="reg-head">
+        <h2>Battitura Scontrini</h2>
+        <button class="reg-small" id="btn-edit-listino" type="button">✏️ Listino</button>
+      </div>
+      <div class="prod-grid" id="prod-grid"></div>
+      <div class="free-amount" id="free-amount">
+        <input class="field-input" type="text" inputmode="decimal" autocomplete="off" id="free-amt" placeholder="Importo libero €">
+        <button class="btn-add-susp" id="btn-free-add" type="button">+ Aggiungi</button>
+      </div>
+      <div id="listino-editor" hidden>
+        <p class="field-hint" style="margin-bottom:10px;">Modifica nome e prezzo dei prodotti. Il listino resta salvato sul telefono.</p>
+        <div id="listino-rows"></div>
+        <button class="reg-small" id="btn-listino-add" type="button">+ Aggiungi prodotto</button>
+        <p class="field-error" id="listino-error" hidden>Ogni prodotto deve avere un nome e un prezzo valido.</p>
+        <div class="btn-row" style="margin-top:12px;">
+          <button class="btn-main btn-secondary" id="btn-listino-cancel" type="button">Annulla</button>
+          <button class="btn-main" id="btn-listino-save" type="button">Salva listino</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Scontrino in corso</h2>
+      <div id="cart-lines"></div>
+      <div class="cart-total"><span class="lbl">TOTALE</span><span class="val" id="cart-total">0,00 EUR</span></div>
+      <div class="pay-row">
+        <button class="pay-btn pay-cash" id="btn-pay-cash" type="button"><span class="pi">💶</span>Contanti</button>
+        <button class="pay-btn pay-satis" id="btn-pay-satispay" type="button"><span class="pi">📱</span>Satispay</button>
+        <button class="pay-btn pay-unpaid" id="btn-pay-unpaid" type="button"><span class="pi">⏳</span>Non pagato</button>
+      </div>
+      <div class="pay-panel" id="pay-cash-panel" hidden>
+        <label for="cash-received">Contanti ricevuti dal cliente</label>
+        <input class="field-input" type="text" inputmode="decimal" autocomplete="off" id="cash-received" placeholder="Lascia vuoto se ha dato l'importo esatto">
+        <div class="note-row">
+          <button class="note-btn" type="button" data-note="exact">Esatto</button>
+          <button class="note-btn" type="button" data-note="5">5 €</button>
+          <button class="note-btn" type="button" data-note="10">10 €</button>
+          <button class="note-btn" type="button" data-note="20">20 €</button>
+          <button class="note-btn" type="button" data-note="50">50 €</button>
+        </div>
+        <div class="change-line"><span id="cash-change-lbl">Resto da dare</span><span class="val" id="cash-change">—</span></div>
+        <div class="btn-row">
+          <button class="btn-main btn-secondary" id="btn-cash-cancel" type="button">Indietro</button>
+          <button class="btn-main btn-success" id="btn-cash-confirm" type="button">Conferma</button>
+        </div>
+      </div>
+      <div class="pay-panel" id="pay-unpaid-panel" hidden>
+        <label for="unpaid-name">Nome o tavolo (opzionale)</label>
+        <input class="field-input" type="text" autocomplete="off" id="unpaid-name" placeholder="Es. Tavolo 3, Marco">
+        <p class="field-hint">Lo scontrino finisce negli Ordini Sospesi, da spuntare quando viene pagato.</p>
+        <div class="btn-row" style="margin-top:12px;">
+          <button class="btn-main btn-secondary" id="btn-unpaid-cancel" type="button">Indietro</button>
+          <button class="btn-main" id="btn-unpaid-confirm" type="button" style="background:#d97706;">Metti in sospeso</button>
+        </div>
+      </div>
+      <button class="reg-clear" id="btn-cart-clear" type="button">Svuota scontrino</button>
+    </div>
+
+    <div class="card">
+      <h2>Riepilogo di oggi</h2>
+      <div class="summary-box" id="reg-summary" style="margin-bottom:6px;"></div>
+      <p class="field-hint">Riepilogo separato: non modifica la chiusura di cassa.</p>
+      <h3 class="reg-sub">Scontrini di oggi</h3>
+      <div id="reg-journal"></div>
+    </div>
+    <button class="btn-main btn-secondary" id="btn-close-register" type="button">Torna alla Cassa</button>
+  </div>
 </div>
 
-<button class="fab-suspended" id="fab-suspended" type="button">
-  📋 Ordini Sospesi <span class="fab-badge" id="fab-badge">0</span>
-</button>
+<div class="fab-bar" id="fab-bar">
+  <button class="fab-btn fab-register" id="fab-register" type="button">🧾 Scontrini</button>
+  <button class="fab-btn" id="fab-suspended" type="button">📋 Ordini Sospesi <span class="fab-badge" id="fab-badge">0</span></button>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
 
 <div id="print-report"></div>
 
@@ -543,9 +696,11 @@
     document.getElementById('step-initial').className = step === 'initial' ? '' : 'hidden';
     document.getElementById('step-final').className = step === 'final' ? '' : 'hidden';
     document.getElementById('step-summary').className = step === 'summary' ? '' : 'hidden';
-    document.getElementById('step-suspended').className = 'hidden';
+    currentSide = null;
+    Object.keys(SIDE_PAGES).forEach(function(k) { document.getElementById(SIDE_PAGES[k]).className = 'hidden'; });
     document.querySelector('.steps').style.display = '';
-    document.getElementById('fab-suspended').style.display = '';
+    document.getElementById('fab-suspended').hidden = false;
+    document.getElementById('fab-register').hidden = false;
 
     var order = ['initial', 'final', 'summary'];
     order.forEach(function(s, idx) {
@@ -846,20 +1001,449 @@
     updateSuspBadge();
   }
 
-  function openSuspended() {
-    prevStep = currentStep;
-    document.getElementById('step-initial').className = 'hidden';
-    document.getElementById('step-final').className = 'hidden';
-    document.getElementById('step-summary').className = 'hidden';
-    document.getElementById('step-suspended').className = '';
+  /* ---- Pagine laterali: si aprono sopra la cassa e "Torna alla Cassa" riporta al passo di partenza ---- */
+  var SIDE_PAGES = { suspended: 'step-suspended', register: 'step-register' };
+  var currentSide = null;
+
+  function openSide(name) {
+    if (!currentSide) prevStep = currentStep;
+    currentSide = name;
+    ['step-initial', 'step-final', 'step-summary'].forEach(function(id) {
+      document.getElementById(id).className = 'hidden';
+    });
+    Object.keys(SIDE_PAGES).forEach(function(k) {
+      document.getElementById(SIDE_PAGES[k]).className = k === name ? '' : 'hidden';
+    });
     document.querySelector('.steps').style.display = 'none';
-    document.getElementById('fab-suspended').style.display = 'none';
-    renderSuspended();
+    document.getElementById('fab-suspended').hidden = name === 'suspended';
+    document.getElementById('fab-register').hidden = name === 'register';
+    if (name === 'suspended') renderSuspended();
+    else renderRegister();
     window.scrollTo(0, 0);
   }
 
-  function closeSuspended() {
+  function closeSide() {
     goToStep(prevStep);
+  }
+
+  /* ---- Battitura scontrini: simulatore di cassa, separato dalla chiusura ---- */
+  var LISTINO_KEY = 'listinoCassa';
+  var RECEIPTS_KEY = 'scontriniCassa';
+  var CART_KEY = 'scontrinoInCorso';
+  var DEFAULT_LISTINO = [
+    { name: 'Caffè', cents: 100 }, { name: 'Acqua', cents: 100 }, { name: 'Bibita', cents: 200 },
+    { name: 'Succo', cents: 150 }, { name: 'Panino', cents: 350 }, { name: 'Toast', cents: 250 },
+    { name: 'Gelato', cents: 200 }, { name: 'Patatine', cents: 100 }, { name: 'Caramelle', cents: 50 }
+  ];
+  var METHOD_LABELS = { contanti: 'Contanti', satispay: 'Satispay', sospeso: 'Non pagato' };
+  var listino = [];
+  var receipts = [];
+  var cart = [];
+  var toastTimer = null;
+
+  function readList(key) {
+    try {
+      var raw = localStorage.getItem(key);
+      var v = raw ? JSON.parse(raw) : null;
+      return Array.isArray(v) ? v : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function writeList(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {}
+  }
+
+  function isItem(x) {
+    return !!x && typeof x.name === 'string' && x.name !== '' && typeof x.cents === 'number' && isFinite(x.cents) && x.cents >= 0;
+  }
+
+  function eur(cents) { return fmt(cents / 100); }
+  function toCents(amount) { return Math.round(amount * 100); }
+
+  function isoOf(d) {
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+  }
+
+  function loadRegister() {
+    var stored = readList(LISTINO_KEY);
+    listino = (stored || DEFAULT_LISTINO.map(function(x) { return { name: x.name, cents: x.cents }; })).filter(isItem);
+    cart = (readList(CART_KEY) || []).filter(function(l) { return isItem(l) && l.qty > 0; });
+    // si tengono gli scontrini degli ultimi 40 giorni
+    var limit = new Date();
+    limit.setDate(limit.getDate() - 40);
+    var limitIso = isoOf(limit);
+    receipts = (readList(RECEIPTS_KEY) || []).filter(function(r) {
+      return !!r && typeof r.date === 'string' && r.date >= limitIso && typeof r.total === 'number' && Array.isArray(r.items);
+    });
+  }
+
+  function todaysReceipts() {
+    var t = todayIso();
+    return receipts.filter(function(r) { return r.date === t; });
+  }
+
+  function cartTotal() {
+    return cart.reduce(function(sum, l) { return sum + l.cents * l.qty; }, 0);
+  }
+
+  function itemsSummary(items) {
+    return items.map(function(l) { return (l.qty > 1 ? l.qty + '× ' : '') + l.name; }).join(', ');
+  }
+
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() { t.hidden = true; }, 3000);
+  }
+
+  function addToCart(name, cents) {
+    var line = cart.filter(function(l) { return l.name === name && l.cents === cents; })[0];
+    if (line) line.qty++;
+    else cart.push({ name: name, cents: cents, qty: 1 });
+    writeList(CART_KEY, cart);
+    renderCart();
+  }
+
+  function changeQty(line, delta) {
+    line.qty += delta;
+    if (line.qty <= 0) cart.splice(cart.indexOf(line), 1);
+    writeList(CART_KEY, cart);
+    renderCart();
+  }
+
+  function renderProducts() {
+    var grid = document.getElementById('prod-grid');
+    clearNode(grid);
+    if (!listino.length) {
+      grid.appendChild(el('div', { className: 'susp-empty', style: 'grid-column:1/-1;padding:12px 0;', text: 'Il listino è vuoto: tocca "Listino" per aggiungere i prodotti.' }));
+      return;
+    }
+    listino.forEach(function(item) {
+      var b = el('button', { className: 'prod-btn', type: 'button' }, [
+        el('span', { className: 'pn', text: item.name }),
+        el('span', { className: 'pp', text: eur(item.cents) })
+      ]);
+      b.addEventListener('click', function() { addToCart(item.name, item.cents); });
+      grid.appendChild(b);
+    });
+  }
+
+  function renderCart() {
+    var box = document.getElementById('cart-lines');
+    clearNode(box);
+    if (!cart.length) {
+      box.appendChild(el('div', { className: 'susp-empty', style: 'padding:14px 0;', text: 'Tocca un prodotto per iniziare lo scontrino.' }));
+    }
+    cart.forEach(function(l) {
+      var minus = el('button', { className: 'btn-incr btn-minus', type: 'button', text: '-' });
+      var plus = el('button', { className: 'btn-incr btn-plus', type: 'button', text: '+' });
+      minus.addEventListener('click', function() { changeQty(l, -1); });
+      plus.addEventListener('click', function() { changeQty(l, 1); });
+      box.appendChild(el('div', { className: 'cart-line' }, [
+        el('div', { className: 'cart-name' }, [document.createTextNode(l.name), el('small', { text: l.qty + ' × ' + eur(l.cents) })]),
+        el('div', { className: 'cart-qty' }, [minus, el('span', { className: 'cart-q', text: String(l.qty) }), plus]),
+        el('span', { className: 'cart-sum', text: eur(l.cents * l.qty) })
+      ]));
+    });
+    setText('cart-total', eur(cartTotal()));
+    ['btn-pay-cash', 'btn-pay-satispay', 'btn-pay-unpaid', 'btn-cart-clear'].forEach(function(id) {
+      document.getElementById(id).disabled = !cart.length;
+    });
+    if (!cart.length) closePayPanels();
+    updateChange();
+  }
+
+  function closePayPanels() {
+    document.getElementById('pay-cash-panel').hidden = true;
+    document.getElementById('pay-unpaid-panel').hidden = true;
+  }
+
+  function openCashPanel() {
+    closePayPanels();
+    document.getElementById('pay-cash-panel').hidden = false;
+    var inp = document.getElementById('cash-received');
+    inp.value = '';
+    inp.classList.remove('invalid');
+    updateChange();
+    inp.focus();
+  }
+
+  function updateChange() {
+    var lbl = document.getElementById('cash-change-lbl');
+    var out = document.getElementById('cash-change');
+    var raw = document.getElementById('cash-received').value;
+    out.style.color = '';
+    if (raw.trim() === '') {
+      lbl.textContent = 'Resto da dare';
+      out.textContent = '—';
+      return;
+    }
+    var received = parseAmount(raw);
+    if (isNaN(received)) {
+      lbl.textContent = 'Importo non valido';
+      out.textContent = '—';
+      out.style.color = '#dc2626';
+      return;
+    }
+    var diff = toCents(received) - cartTotal();
+    lbl.textContent = diff < 0 ? 'Mancano' : 'Resto da dare';
+    out.textContent = eur(Math.abs(diff));
+    out.style.color = diff < 0 ? '#dc2626' : '#16a34a';
+  }
+
+  function confirmCash() {
+    var inp = document.getElementById('cash-received');
+    var total = cartTotal();
+    var received = total;
+    if (inp.value.trim() !== '') {
+      var v = parseAmount(inp.value);
+      if (isNaN(v) || toCents(v) < total) {
+        inp.classList.add('invalid');
+        updateChange();
+        inp.focus();
+        return;
+      }
+      received = toCents(v);
+    }
+    finishReceipt('contanti', { received: received, change: received - total });
+  }
+
+  function openUnpaidPanel() {
+    closePayPanels();
+    document.getElementById('pay-unpaid-panel').hidden = false;
+    var inp = document.getElementById('unpaid-name');
+    inp.value = '';
+    inp.focus();
+  }
+
+  function confirmUnpaid() {
+    var name = document.getElementById('unpaid-name').value.trim();
+    var n = todaysReceipts().length + 1;
+    var order = {
+      id: Date.now(),
+      text: (name || 'Scontrino n. ' + n) + ' – ' + itemsSummary(cart),
+      amount: cartTotal() / 100,
+      done: false
+    };
+    suspendedOrders.push(order);
+    saveSuspended();
+    updateSuspBadge();
+    finishReceipt('sospeso', { suspId: order.id, customer: name });
+  }
+
+  function finishReceipt(method, extra) {
+    var now = new Date();
+    var r = {
+      id: String(Date.now()) + Math.random().toString(36).slice(2, 7),
+      n: todaysReceipts().length + 1,
+      date: todayIso(),
+      time: pad2(now.getHours()) + ':' + pad2(now.getMinutes()),
+      items: cart.map(function(l) { return { name: l.name, cents: l.cents, qty: l.qty }; }),
+      total: cartTotal(),
+      method: method,
+      cancelled: false
+    };
+    Object.keys(extra || {}).forEach(function(k) { r[k] = extra[k]; });
+    receipts.push(r);
+    writeList(RECEIPTS_KEY, receipts);
+    cart = [];
+    writeList(CART_KEY, cart);
+    closePayPanels();
+    renderCart();
+    renderRegisterSummary();
+    var msg = 'Scontrino n. ' + r.n + ': ' + eur(r.total);
+    if (method === 'contanti') msg += ' in contanti' + (r.change > 0 ? ' — resto ' + eur(r.change) : '');
+    else if (method === 'satispay') msg += ' con Satispay';
+    else msg += ' da pagare, messo negli Ordini Sospesi';
+    showToast(msg);
+  }
+
+  function clearCart() {
+    if (!cart.length || !window.confirm('Svuotare lo scontrino in corso?')) return;
+    cart = [];
+    writeList(CART_KEY, cart);
+    renderCart();
+  }
+
+  function cancelReceipt(r) {
+    if (!window.confirm('Annullare lo scontrino n. ' + r.n + ' da ' + eur(r.total) + '?')) return;
+    r.cancelled = true;
+    if (r.suspId) {
+      var idx = suspendedOrders.map(function(o) { return o.id; }).indexOf(r.suspId);
+      if (idx > -1 && !suspendedOrders[idx].done) {
+        suspendedOrders.splice(idx, 1);
+        saveSuspended();
+        updateSuspBadge();
+      }
+    }
+    writeList(RECEIPTS_KEY, receipts);
+    renderRegisterSummary();
+    showToast('Scontrino n. ' + r.n + ' annullato');
+  }
+
+  function renderRegisterSummary() {
+    var today = todaysReceipts();
+    var valid = today.filter(function(r) { return !r.cancelled; });
+    var cancelled = today.length - valid.length;
+    var sumOf = function(method) {
+      return valid.filter(function(r) { return !method || r.method === method; })
+        .reduce(function(sum, r) { return sum + r.total; }, 0);
+    };
+    var box = document.getElementById('reg-summary');
+    clearNode(box);
+    var line = function(label, value, cls) {
+      box.appendChild(el('div', { className: 'summary-line' + (cls ? ' ' + cls : '') }, [el('span', { text: label }), el('span', { text: value })]));
+    };
+    line('Scontrini battuti', valid.length + (cancelled ? ' (+' + cancelled + ' annullat' + (cancelled === 1 ? 'o' : 'i') + ')' : ''));
+    line('Totale battuto', eur(sumOf(null)), 'bold');
+    line('di cui contanti', eur(sumOf('contanti')));
+    line('di cui Satispay', eur(sumOf('satispay')));
+    line('di cui non pagati (Ordini Sospesi)', eur(sumOf('sospeso')));
+    renderJournal();
+  }
+
+  function renderJournal() {
+    var box = document.getElementById('reg-journal');
+    clearNode(box);
+    var list = todaysReceipts().slice().reverse();
+    if (!list.length) {
+      box.appendChild(el('div', { className: 'susp-empty', style: 'padding:14px 0;', text: 'Nessuno scontrino battuto oggi.' }));
+      return;
+    }
+    list.forEach(function(r) {
+      var details = itemsSummary(r.items);
+      if (r.method === 'contanti' && r.change > 0) details += ' — ricevuti ' + eur(r.received) + ', resto ' + eur(r.change);
+      if (r.customer) details += ' — ' + r.customer;
+      var row = el('div', { className: 'journal-row' + (r.cancelled ? ' cancelled' : '') }, [
+        el('div', { className: 'journal-main' }, [
+          el('div', { className: 'journal-top' }, [
+            el('span', { text: 'n. ' + r.n + ' · ' + r.time + ' · ' + (METHOD_LABELS[r.method] || r.method) }),
+            el('span', { text: eur(r.total) })
+          ]),
+          el('div', { className: 'journal-items', text: details })
+        ])
+      ]);
+      if (r.cancelled) {
+        row.appendChild(el('span', { className: 'journal-void', text: 'ANNULLATO' }));
+      } else {
+        var b = el('button', { className: 'journal-cancel', type: 'button', text: 'Annulla' });
+        b.addEventListener('click', function() { cancelReceipt(r); });
+        row.appendChild(b);
+      }
+      box.appendChild(row);
+    });
+  }
+
+  function addFreeAmount() {
+    var inp = document.getElementById('free-amt');
+    var v = parseAmount(inp.value);
+    if (isNaN(v) || v <= 0) {
+      inp.classList.add('invalid');
+      inp.focus();
+      return;
+    }
+    inp.classList.remove('invalid');
+    addToCart('Importo libero', toCents(v));
+    inp.value = '';
+  }
+
+  function addEditorRow(name, price) {
+    var nameIn = el('input', { className: 'field-input lname', type: 'text', placeholder: 'Prodotto', autocomplete: 'off' });
+    nameIn.value = name;
+    var priceIn = el('input', { className: 'field-input lprice', type: 'text', inputmode: 'decimal', placeholder: '0,00', autocomplete: 'off' });
+    priceIn.value = price;
+    var del = el('button', { className: 'susp-del', type: 'button', text: '×' });
+    var row = el('div', { className: 'listino-row' }, [nameIn, priceIn, del]);
+    del.addEventListener('click', function() { row.parentNode.removeChild(row); });
+    document.getElementById('listino-rows').appendChild(row);
+    return nameIn;
+  }
+
+  function showListinoEditor(show) {
+    document.getElementById('listino-editor').hidden = !show;
+    document.getElementById('prod-grid').hidden = show;
+    document.getElementById('free-amount').hidden = show;
+    document.getElementById('btn-edit-listino').hidden = show;
+  }
+
+  function openListinoEditor() {
+    clearNode(document.getElementById('listino-rows'));
+    listino.forEach(function(item) { addEditorRow(item.name, (item.cents / 100).toFixed(2).replace('.', ',')); });
+    if (!listino.length) addEditorRow('', '');
+    document.getElementById('listino-error').hidden = true;
+    showListinoEditor(true);
+  }
+
+  function saveListinoEditor() {
+    var next = [];
+    var ok = true;
+    Array.prototype.forEach.call(document.querySelectorAll('#listino-rows .listino-row'), function(row) {
+      var nameIn = row.querySelector('.lname');
+      var priceIn = row.querySelector('.lprice');
+      var name = nameIn.value.trim();
+      var price = parseAmount(priceIn.value);
+      nameIn.classList.remove('invalid');
+      priceIn.classList.remove('invalid');
+      if (!name && priceIn.value.trim() === '') return; // riga lasciata vuota
+      if (!name) { nameIn.classList.add('invalid'); ok = false; }
+      if (isNaN(price)) { priceIn.classList.add('invalid'); ok = false; }
+      if (name && !isNaN(price)) next.push({ name: name, cents: toCents(price) });
+    });
+    document.getElementById('listino-error').hidden = ok;
+    if (!ok) return;
+    listino = next;
+    writeList(LISTINO_KEY, listino);
+    showListinoEditor(false);
+    renderProducts();
+    showToast('Listino salvato');
+  }
+
+  function renderRegister() {
+    showListinoEditor(false);
+    renderProducts();
+    renderCart();
+    renderRegisterSummary();
+  }
+
+  function setupRegister() {
+    loadRegister();
+    document.getElementById('fab-register').addEventListener('click', function() { openSide('register'); });
+    document.getElementById('btn-close-register').addEventListener('click', closeSide);
+    document.getElementById('btn-free-add').addEventListener('click', addFreeAmount);
+    document.getElementById('free-amt').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); addFreeAmount(); }
+    });
+    document.getElementById('btn-pay-cash').addEventListener('click', openCashPanel);
+    document.getElementById('btn-pay-satispay').addEventListener('click', function() { finishReceipt('satispay'); });
+    document.getElementById('btn-pay-unpaid').addEventListener('click', openUnpaidPanel);
+    document.getElementById('btn-cash-cancel').addEventListener('click', closePayPanels);
+    document.getElementById('btn-cash-confirm').addEventListener('click', confirmCash);
+    document.getElementById('btn-unpaid-cancel').addEventListener('click', closePayPanels);
+    document.getElementById('btn-unpaid-confirm').addEventListener('click', confirmUnpaid);
+    document.getElementById('btn-cart-clear').addEventListener('click', clearCart);
+    var received = document.getElementById('cash-received');
+    received.addEventListener('input', function() { received.classList.remove('invalid'); updateChange(); });
+    received.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); confirmCash(); }
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.note-btn'), function(b) {
+      b.addEventListener('click', function() {
+        var note = b.getAttribute('data-note');
+        received.value = note === 'exact' ? (cartTotal() / 100).toFixed(2).replace('.', ',') : note;
+        received.classList.remove('invalid');
+        updateChange();
+      });
+    });
+    document.getElementById('btn-edit-listino').addEventListener('click', openListinoEditor);
+    document.getElementById('btn-listino-add').addEventListener('click', function() { addEditorRow('', '').focus(); });
+    document.getElementById('btn-listino-cancel').addEventListener('click', function() { showListinoEditor(false); });
+    document.getElementById('btn-listino-save').addEventListener('click', saveListinoEditor);
   }
 
   /* ---- Resoconto PDF (via stampa del browser) ---- */
@@ -1043,9 +1627,10 @@
 
     loadSuspended();
     updateSuspBadge();
-    document.getElementById('fab-suspended').addEventListener('click', openSuspended);
+    document.getElementById('fab-suspended').addEventListener('click', function() { openSide('suspended'); });
     document.getElementById('btn-add-susp').addEventListener('click', addSuspended);
-    document.getElementById('btn-close-susp').addEventListener('click', closeSuspended);
+    document.getElementById('btn-close-susp').addEventListener('click', closeSide);
+    setupRegister();
     document.getElementById('susp-desc').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') { e.preventDefault(); addSuspended(); }
     });
