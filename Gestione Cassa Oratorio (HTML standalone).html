@@ -827,6 +827,10 @@
     return p[2] + '/' + p[1] + '/' + p[0];
   }
 
+  function escHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
   function prRow(label, value, opts) {
     opts = opts || {};
     var strong = opts.strong ? 'font-weight:700;' : 'font-weight:600;';
@@ -835,8 +839,8 @@
     var top = opts.top ? 'border-top:2px solid #cbd5e1;margin-top:4px;padding-top:8px;' : '';
     var color = opts.color ? 'color:' + opts.color + ';' : '';
     return '<div style="display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;' + size + border + top + '">' +
-      '<span style="color:#374151;">' + label + '</span>' +
-      '<span style="' + strong + color + 'white-space:nowrap;padding-left:12px;">' + value + '</span></div>';
+      '<span style="color:#374151;">' + escHtml(label) + '</span>' +
+      '<span style="' + strong + color + 'white-space:nowrap;padding-left:12px;">' + escHtml(value) + '</span></div>';
   }
 
   function prSection(title) {
