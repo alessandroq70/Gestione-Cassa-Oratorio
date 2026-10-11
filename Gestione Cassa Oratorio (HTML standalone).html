@@ -89,11 +89,17 @@
   .field-hint { font-size: 12px; color: #9ca3af; margin-top: 4px; }
   .req { color: #dc2626; font-weight: 700; }
   .field-main { font-size: 18px; font-weight: 600; border: 2px solid #2563eb; }
-  .field-main.invalid { border-color: #dc2626; background: #fef2f2; }
+  .field-input.invalid { border: 2px solid #dc2626; background: #fef2f2; }
   .field-error { font-size: 13px; color: #dc2626; font-weight: 600; margin-top: 6px; }
-  .detail-section { margin-top: 4px; padding-top: 14px; border-top: 1px solid #e5e7eb; }
-  .detail-section h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; color: #374151; }
-  .detail-section h3 .opt { font-weight: 500; font-size: 13px; color: #9ca3af; }
+  .src-section + .src-section { margin-top: 4px; padding-top: 14px; border-top: 1px solid #e5e7eb; }
+  .src-section h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; color: #374151; }
+  .cmp-table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 4px; }
+  .cmp-table th { font-size: 12px; font-weight: 600; color: #6b7280; text-align: right; padding: 2px 0 4px; }
+  .cmp-table th:first-child, .cmp-table td:first-child { text-align: left; }
+  .cmp-table td { text-align: right; padding: 3px 0; white-space: nowrap; }
+  .cmp-table td:first-child { color: #6b7280; }
+  .cmp-table td.mis { color: #ea580c; font-weight: 700; }
+  .cmp-table tr.tot td { border-top: 1px solid #ddd; padding-top: 6px; font-weight: 700; color: #1f2937; }
   .btn-main {
     width: 100%; padding: 14px; border-radius: 10px; border: none;
     font-size: 16px; font-weight: 700; cursor: pointer; color: white;
@@ -124,6 +130,7 @@
   .verify-box { border-radius: 10px; padding: 14px; margin-bottom: 16px; border: 2px solid; }
   .verify-ok { background: #f0fdf4; border-color: #22c55e; }
   .verify-warn { background: #fff7ed; border-color: #f97316; }
+  .verify-info { background: #eff6ff; border-color: #3b82f6; }
   .indigo-box { background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 14px; margin-top: 10px; }
   .indigo-box .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
   .indigo-box .val { font-size: 22px; font-weight: 700; color: #4f46e5; }
@@ -256,44 +263,12 @@
 
     <div class="card">
       <h2>Incassi e Pagamenti</h2>
-      <div class="field">
-        <label>Incasso Totale (dal registratore) <span class="req">*</span></label>
-        <input class="field-input field-main" type="number" step="0.01" id="registerTotal" placeholder="0.00">
-        <div class="quick-row" data-target="registerTotal">
-          <button type="button" class="quick-btn quick-sub" data-amt="-10">−10</button>
-          <button type="button" class="quick-btn quick-sub" data-amt="-1">−1</button>
-          <button type="button" class="quick-btn quick-sub" data-amt="-0.1">−0,10</button>
-          <button type="button" class="quick-btn quick-add" data-amt="0.1">+0,10</button>
-          <button type="button" class="quick-btn quick-add" data-amt="0.5">+0,50</button>
-          <button type="button" class="quick-btn quick-add" data-amt="1">+1</button>
-          <button type="button" class="quick-btn quick-add" data-amt="10">+10</button>
-          <button type="button" class="quick-btn quick-clear" data-amt="clear">C</button>
-        </div>
-        <p class="field-hint">Il totale della giornata indicato dal registratore (contanti + Satispay).</p>
-        <p class="field-error" id="err-register-total" hidden>Inserisci l'incasso totale dal registratore per vedere la quadratura.</p>
-      </div>
-
-      <div class="field">
-        <label>Rimborsi</label>
-        <input class="field-input" type="number" step="0.01" id="refunds" placeholder="0.00">
-        <div class="quick-row" data-target="refunds">
-          <button type="button" class="quick-btn quick-sub" data-amt="-10">−10</button>
-          <button type="button" class="quick-btn quick-sub" data-amt="-1">−1</button>
-          <button type="button" class="quick-btn quick-sub" data-amt="-0.1">−0,10</button>
-          <button type="button" class="quick-btn quick-add" data-amt="0.1">+0,10</button>
-          <button type="button" class="quick-btn quick-add" data-amt="0.5">+0,50</button>
-          <button type="button" class="quick-btn quick-add" data-amt="1">+1</button>
-          <button type="button" class="quick-btn quick-add" data-amt="10">+10</button>
-          <button type="button" class="quick-btn quick-clear" data-amt="clear">C</button>
-        </div>
-      </div>
-
-      <div class="detail-section">
-        <h3>Dettaglio pagamenti <span class="opt">(opzionale - per verifica)</span></h3>
+      <div class="src-section">
+        <h3>🧾 Dallo scontrino di chiusura</h3>
         <div class="field">
-          <label>Incasso Satispay (dall'app Satispay)</label>
-          <input class="field-input" type="number" step="0.01" id="satispay" placeholder="0.00">
-          <div class="quick-row" data-target="satispay">
+          <label>Incasso Totale <span class="req">*</span></label>
+          <input class="field-input field-main" type="number" step="0.01" id="registerTotal" placeholder="0.00" data-required>
+          <div class="quick-row" data-target="registerTotal">
             <button type="button" class="quick-btn quick-sub" data-amt="-10">−10</button>
             <button type="button" class="quick-btn quick-sub" data-amt="-1">−1</button>
             <button type="button" class="quick-btn quick-sub" data-amt="-0.1">−0,10</button>
@@ -303,11 +278,12 @@
             <button type="button" class="quick-btn quick-add" data-amt="10">+10</button>
             <button type="button" class="quick-btn quick-clear" data-amt="clear">C</button>
           </div>
-          <p class="field-hint">I soldi Satispay non sono nel cassetto: se qualcuno ha pagato con Satispay inseriscilo, altrimenti risulterà come contante mancante.</p>
+          <p class="field-hint">Il totale della giornata stampato sullo scontrino di chiusura.</p>
+          <p class="field-error" id="err-registerTotal" hidden>Inserisci l'incasso totale dello scontrino.</p>
         </div>
         <div class="field">
-          <label>Incasso Contanti (dal registratore)</label>
-          <input class="field-input" type="number" step="0.01" id="totalBatched" placeholder="0.00">
+          <label>di cui Contanti <span class="req">*</span></label>
+          <input class="field-input" type="number" step="0.01" id="totalBatched" placeholder="0.00" data-required>
           <div class="quick-row" data-target="totalBatched">
             <button type="button" class="quick-btn quick-sub" data-amt="-10">−10</button>
             <button type="button" class="quick-btn quick-sub" data-amt="-1">−1</button>
@@ -318,14 +294,68 @@
             <button type="button" class="quick-btn quick-add" data-amt="10">+10</button>
             <button type="button" class="quick-btn quick-clear" data-amt="clear">C</button>
           </div>
-          <p class="field-hint">Serve solo a controllare che i pagamenti siano stati battuti con il metodo giusto (contanti o Satispay).</p>
+          <p class="field-hint">I contanti battuti, come riportati sullo scontrino.</p>
+          <p class="field-error" id="err-totalBatched" hidden>Inserisci i contanti dello scontrino (0 se non ce ne sono).</p>
+        </div>
+        <div class="field">
+          <label>di cui Satispay / elettronico <span class="req">*</span></label>
+          <input class="field-input" type="number" step="0.01" id="satispayReceipt" placeholder="0.00" data-required>
+          <div class="quick-row" data-target="satispayReceipt">
+            <button type="button" class="quick-btn quick-sub" data-amt="-10">−10</button>
+            <button type="button" class="quick-btn quick-sub" data-amt="-1">−1</button>
+            <button type="button" class="quick-btn quick-sub" data-amt="-0.1">−0,10</button>
+            <button type="button" class="quick-btn quick-add" data-amt="0.1">+0,10</button>
+            <button type="button" class="quick-btn quick-add" data-amt="0.5">+0,50</button>
+            <button type="button" class="quick-btn quick-add" data-amt="1">+1</button>
+            <button type="button" class="quick-btn quick-add" data-amt="10">+10</button>
+            <button type="button" class="quick-btn quick-clear" data-amt="clear">C</button>
+          </div>
+          <p class="field-hint">I pagamenti elettronici battuti, come riportati sullo scontrino.</p>
+          <p class="field-error" id="err-satispayReceipt" hidden>Inserisci il Satispay dello scontrino (0 se non ce ne sono).</p>
+        </div>
+      </div>
+
+      <div class="src-section">
+        <h3>📱 Dal cellulare</h3>
+        <div class="field">
+          <label>Incasso Satispay reale (app Satispay) <span class="req">*</span></label>
+          <input class="field-input" type="number" step="0.01" id="satispay" placeholder="0.00" data-required>
+          <div class="quick-row" data-target="satispay">
+            <button type="button" class="quick-btn quick-sub" data-amt="-10">−10</button>
+            <button type="button" class="quick-btn quick-sub" data-amt="-1">−1</button>
+            <button type="button" class="quick-btn quick-sub" data-amt="-0.1">−0,10</button>
+            <button type="button" class="quick-btn quick-add" data-amt="0.1">+0,10</button>
+            <button type="button" class="quick-btn quick-add" data-amt="0.5">+0,50</button>
+            <button type="button" class="quick-btn quick-add" data-amt="1">+1</button>
+            <button type="button" class="quick-btn quick-add" data-amt="10">+10</button>
+            <button type="button" class="quick-btn quick-clear" data-amt="clear">C</button>
+          </div>
+          <p class="field-hint">Quanto è arrivato davvero su Satispay, come risulta dall'app. È questo che conta per la quadratura. Se nessuno ha pagato con Satispay, scrivi 0.</p>
+          <p class="field-error" id="err-satispay" hidden>Inserisci l'incasso Satispay dall'app (0 se non ce ne sono).</p>
+        </div>
+      </div>
+
+      <div class="src-section">
+        <div class="field">
+          <label>Rimborsi</label>
+          <input class="field-input" type="number" step="0.01" id="refunds" placeholder="0.00">
+          <div class="quick-row" data-target="refunds">
+            <button type="button" class="quick-btn quick-sub" data-amt="-10">−10</button>
+            <button type="button" class="quick-btn quick-sub" data-amt="-1">−1</button>
+            <button type="button" class="quick-btn quick-sub" data-amt="-0.1">−0,10</button>
+            <button type="button" class="quick-btn quick-add" data-amt="0.1">+0,10</button>
+            <button type="button" class="quick-btn quick-add" data-amt="0.5">+0,50</button>
+            <button type="button" class="quick-btn quick-add" data-amt="1">+1</button>
+            <button type="button" class="quick-btn quick-add" data-amt="10">+10</button>
+            <button type="button" class="quick-btn quick-clear" data-amt="clear">C</button>
+          </div>
         </div>
       </div>
 
       <div class="summary-box" style="margin-bottom:0;">
-        <div class="summary-line bold" style="border-top:none;margin-top:0;padding-top:4px;"><span>Incasso Totale:</span><span id="sum-totale">0,00 EUR</span></div>
-        <div class="summary-line"><span>di cui Satispay:</span><span id="sum-satispay">0,00 EUR</span></div>
-        <div class="summary-line"><span>di cui Contanti (calcolato):</span><span id="sum-contanti">0,00 EUR</span></div>
+        <div class="summary-line bold" style="border-top:none;margin-top:0;padding-top:4px;"><span>Incasso Totale (scontrino):</span><span id="sum-totale">0,00 EUR</span></div>
+        <div class="summary-line"><span>Satispay reale (app):</span><span id="sum-satispay">0,00 EUR</span></div>
+        <div class="summary-line"><span>Contanti attesi (totale − Satispay):</span><span id="sum-contanti">0,00 EUR</span></div>
         <div class="summary-line top"><span>Contante Conteggiato:</span><span id="sum-contante-cont">0,00 EUR</span></div>
       </div>
     </div>
@@ -347,7 +377,7 @@
     <div class="card">
       <h2>Quadratura Cassa</h2>
       <div class="calc-line"><span class="lbl">Fondo cassa iniziale</span><span class="val pos" id="q-fondo">+ 0,00 EUR</span></div>
-      <div class="calc-line"><span class="lbl">Incasso totale (registratore)</span><span class="val pos" id="q-totale">+ 0,00 EUR</span></div>
+      <div class="calc-line"><span class="lbl">Incasso totale (scontrino)</span><span class="val pos" id="q-totale">+ 0,00 EUR</span></div>
       <div class="calc-line"><span class="lbl">Incasso Satispay (non in cassa)</span><span class="val neg" id="q-satispay">- 0,00 EUR</span></div>
       <div class="calc-line"><span class="lbl">Rimborsi</span><span class="val neg" id="q-rimborsi">- 0,00 EUR</span></div>
       <div class="calc-sub"><span class="lbl">Contante atteso in cassa</span><span class="val" id="quad-atteso">0,00 EUR</span></div>
@@ -537,7 +567,8 @@
         var next = current + (parseFloat(amtAttr) || 0);
         if (next < 0) next = 0;
         next = Math.round(next * 100) / 100;
-        field.value = next === 0 ? '' : String(next);
+        // Nei campi obbligatori lo 0 e' un valore inserito, non un campo vuoto
+        field.value = (next === 0 && !field.hasAttribute('data-required')) ? '' : String(next);
         recalc();
       });
     });
@@ -593,26 +624,41 @@
     return !!node && node.value !== '';
   }
 
-  function showTotalError(show) {
-    document.getElementById('err-register-total').hidden = !show;
-    document.getElementById('registerTotal').classList.toggle('invalid', show);
+  // Campi da compilare prima di vedere la quadratura (0 e' un valore valido)
+  var REQUIRED_FIELDS = ['registerTotal', 'totalBatched', 'satispayReceipt', 'satispay'];
+
+  function showFieldError(id, show) {
+    document.getElementById('err-' + id).hidden = !show;
+    document.getElementById(id).classList.toggle('invalid', show);
   }
+
+  function missingRequired() {
+    return REQUIRED_FIELDS.filter(function(id) { return !hasValue(id); });
+  }
+
+  function isOff(a, b) { return Math.abs(a - b) >= 0.01; }
 
   function recalc() {
     var initialTotal = sumCash(initialCash);
     var finalTotal = sumCash(finalCash);
-    var registerTotal = getNum('registerTotal');
-    var satispay = getNum('satispay');
-    var cashBatched = getNum('totalBatched');
+    var registerTotal = getNum('registerTotal');     // scontrino: totale
+    var cashBatched = getNum('totalBatched');        // scontrino: contanti battuti
+    var satispayReceipt = getNum('satispayReceipt'); // scontrino: Satispay battuto
+    var satispay = getNum('satispay');               // app: Satispay reale
     var refunds = getNum('refunds');
-    var hasTotal = hasValue('registerTotal');
-    if (hasTotal) showTotalError(false);
+    REQUIRED_FIELDS.forEach(function(id) {
+      if (hasValue(id)) showFieldError(id, false);
+    });
+    var complete = missingRequired().length === 0;
 
-    // Il totale del registratore e' il dato principale: il contante incassato
-    // si ricava togliendo il Satispay, che non finisce nel cassetto.
+    // La quadratura usa il totale dello scontrino e il Satispay reale dell'app:
+    // il dettaglio battuto sullo scontrino puo' essere sbagliato, il totale no.
     var cashIncome = registerTotal - satispay;
     var expectedCash = initialTotal + registerTotal - satispay - refunds;
     var difference = finalTotal - expectedCash;
+    // Quanto incassato davvero: contanti dal conteggio + Satispay dall'app
+    var realCash = finalTotal - initialTotal + refunds;
+    var realTotal = realCash + satispay;
 
     setText('total-initial', fmt(initialTotal));
     setText('total-final', fmt(finalTotal));
@@ -629,47 +675,65 @@
     setText('q-satispay', '- ' + fmt(satispay));
     setText('q-rimborsi', '- ' + fmt(refunds));
 
-    // Verifica facoltativa: contanti battuti + Satispay devono dare il totale
+    // Scontrino vs realta': se il dettaglio battuto non torna ma la cassa quadra,
+    // e' solo una vendita battuta col metodo sbagliato e lo segnaliamo senza allarmare.
     var verifyContainer = document.getElementById('verify-box-container');
     clearNode(verifyContainer);
 
-    if (hasTotal && hasValue('totalBatched')) {
-      var detailSum = cashBatched + satispay;
-      var detailDiff = detailSum - registerTotal;
-      var ok = Math.abs(detailDiff) < 0.01;
+    if (complete) {
+      var cashOk = !isOff(difference, 0);
+      var methodDiff = satispay - satispayReceipt;
+      var methodOff = isOff(methodDiff, 0);
+      var receiptSum = cashBatched + satispayReceipt;
+      var receiptOff = isOff(receiptSum, registerTotal);
+      var state = !cashOk ? 'warn' : ((methodOff || receiptOff) ? 'info' : 'ok');
+      var stateColor = { ok: '#16a34a', info: '#2563eb', warn: '#ea580c' }[state];
+      var stateText = { ok: 'Corretto', info: 'Segnalazione', warn: 'Non quadra' }[state];
 
-      var box = el('div', { className: 'verify-box ' + (ok ? 'verify-ok' : 'verify-warn') });
+      var box = el('div', { className: 'verify-box verify-' + state });
 
       var headerRow = el('div', { style: 'display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;' });
-      headerRow.appendChild(el('span', { style: 'font-weight:600;color:#374151;', text: 'Verifica Dettaglio Pagamenti:' }));
-      headerRow.appendChild(el('span', { style: 'font-weight:700;font-size:16px;color:' + (ok ? '#16a34a' : '#ea580c') + ';', text: ok ? 'Corretto' : 'Differenza' }));
+      headerRow.appendChild(el('span', { style: 'font-weight:600;color:#374151;', text: 'Scontrino vs Realtà:' }));
+      headerRow.appendChild(el('span', { style: 'font-weight:700;font-size:16px;color:' + stateColor + ';', text: stateText }));
       box.appendChild(headerRow);
 
-      var detailWrap = el('div', { style: 'font-size:14px;' });
+      var table = el('table', { className: 'cmp-table' });
+      var head = el('tr');
+      ['', 'Scontrino', 'Reale'].forEach(function(t) { head.appendChild(el('th', { text: t })); });
+      table.appendChild(head);
+      [
+        ['Contanti', cashBatched, realCash],
+        ['Satispay', satispayReceipt, satispay],
+        ['Totale', registerTotal, realTotal]
+      ].forEach(function(r, idx) {
+        var tr = el('tr', { className: idx === 2 ? 'tot' : '' });
+        tr.appendChild(el('td', { text: r[0] }));
+        tr.appendChild(el('td', { text: fmt(r[1]) }));
+        tr.appendChild(el('td', { className: isOff(r[1], r[2]) ? 'mis' : '', text: fmt(r[2]) }));
+        table.appendChild(tr);
+      });
+      box.appendChild(table);
+      box.appendChild(el('div', { className: 'field-hint', text: 'Reale: contanti dal conteggio (cassa − fondo + rimborsi), Satispay dall\'app.' }));
 
-      var rowA = el('div', { style: 'display:flex;justify-content:space-between;' });
-      rowA.appendChild(el('span', { style: 'color:#6b7280;', text: 'Totale registratore:' }));
-      rowA.appendChild(el('span', { style: 'font-weight:600;', text: fmt(registerTotal) }));
-      detailWrap.appendChild(rowA);
-
-      var rowB = el('div', { style: 'display:flex;justify-content:space-between;' });
-      rowB.appendChild(el('span', { style: 'color:#6b7280;', text: 'Contanti + Satispay:' }));
-      rowB.appendChild(el('span', { style: 'font-weight:600;', text: fmt(detailSum) }));
-      detailWrap.appendChild(rowB);
-
-      if (!ok) {
-        var rowC = el('div', { style: 'display:flex;justify-content:space-between;border-top:1px solid #ddd;padding-top:6px;margin-top:6px;' });
-        rowC.appendChild(el('span', { style: 'font-weight:600;', text: 'Differenza:' }));
-        rowC.appendChild(el('span', { style: 'font-weight:700;color:#ea580c;', text: (detailDiff > 0 ? '+' : '') + fmt(detailDiff) }));
-        detailWrap.appendChild(rowC);
-        var diffMsg = 'Contanti battuti (' + fmt(cashBatched) + ') + Satispay (' + fmt(satispay) + ') = ' + fmt(detailSum) +
-          ', ma il totale del registratore è ' + fmt(registerTotal) + ': ' +
-          (detailDiff < 0 ? 'mancano ' + fmt(Math.abs(detailDiff)) : 'ci sono ' + fmt(detailDiff) + ' in più') +
-          '. Probabilmente qualche pagamento è stato battuto con il metodo sbagliato. La quadratura usa il totale del registratore, quindi se la cassa quadra non è un problema.';
-        detailWrap.appendChild(buildAlert('orange', null, diffMsg));
+      if (receiptOff) {
+        box.appendChild(buildAlert('orange', 'Scontrino:', 'contanti (' + fmt(cashBatched) + ') + Satispay (' + fmt(satispayReceipt) + ') = ' + fmt(receiptSum) +
+          ', ma il totale è ' + fmt(registerTotal) + '. Controlla di aver copiato bene i numeri dello scontrino.'));
+      }
+      var methodMsg = methodOff
+        ? (methodDiff > 0
+            ? fmt(methodDiff) + ' risultano battuti come contanti ma pagati con Satispay'
+            : fmt(Math.abs(methodDiff)) + ' risultano battuti come Satispay ma pagati in contanti')
+        : '';
+      if (cashOk) {
+        if (methodOff) {
+          box.appendChild(buildAlert('blue', null, methodMsg + '. È solo un errore di battitura: il totale dello scontrino torna con il Satispay dell\'app e il contante in cassa, quindi la quadratura è corretta.'));
+        }
+      } else {
+        box.appendChild(buildAlert('orange', null, 'Il totale dello scontrino (' + fmt(registerTotal) + ') non torna con quanto incassato davvero (' + fmt(realTotal) + '): ' +
+          (difference < 0 ? 'mancano ' + fmt(Math.abs(difference)) : 'ci sono ' + fmt(difference) + ' in più') + '. Vedi la quadratura qui sotto.' +
+          (methodOff ? ' Inoltre ' + methodMsg + ', ma questo da solo non sposta la quadratura.' : '')));
       }
 
-      box.appendChild(detailWrap);
       verifyContainer.appendChild(box);
     }
 
@@ -685,11 +749,11 @@
     var alertsContainer = document.getElementById('quad-alerts');
     clearNode(alertsContainer);
 
-    if (!hasTotal) {
-      alertsContainer.appendChild(buildAlert('orange', 'Attenzione:', "manca l'incasso totale dal registratore. Torna indietro e inseriscilo."));
+    if (!complete) {
+      alertsContainer.appendChild(buildAlert('orange', 'Attenzione:', "mancano dei dati dello scontrino o il Satispay dall'app. Torna indietro e inseriscili."));
     } else {
       if (cashIncome < -0.005) {
-        alertsContainer.appendChild(buildAlert('orange', 'Attenzione:', "l'incasso Satispay (" + fmt(satispay) + ") è maggiore dell'incasso totale (" + fmt(registerTotal) + '). Controlla gli importi.'));
+        alertsContainer.appendChild(buildAlert('orange', 'Attenzione:', "il Satispay dall'app (" + fmt(satispay) + ") è maggiore dell'incasso totale dello scontrino (" + fmt(registerTotal) + '). Controlla gli importi.'));
       }
       if (Math.abs(difference) < 0.01) {
         alertsContainer.appendChild(buildAlert('green', null, 'Perfetto: tutto quadra!'));
@@ -697,11 +761,7 @@
         alertsContainer.appendChild(buildAlert('yellow', null, difference > 0
           ? 'Eccedenza: in cassa ci sono ' + fmt(difference) + ' in più del previsto.'
           : 'Ammanco: in cassa mancano ' + fmt(Math.abs(difference)) + ' rispetto al previsto.'));
-        if (difference < 0 && !hasValue('satispay')) {
-          alertsContainer.appendChild(buildAlert('blue', 'Satispay:', "se qualcuno ha pagato con Satispay, inserisci l'incasso Satispay nel dettaglio pagamenti: quei soldi non sono nel cassetto e ora risultano come contante mancante."));
-        } else {
-          alertsContainer.appendChild(buildAlert('blue', 'Verifica:', "ricontrolla il conteggio del contante, i rimborsi e l'incasso Satispay."));
-        }
+        alertsContainer.appendChild(buildAlert('blue', 'Verifica:', "ricontrolla il conteggio del contante, i rimborsi e l'incasso Satispay dall'app."));
       }
     }
 
@@ -884,13 +944,16 @@
     var initialTotal = sumCash(initialCash);
     var finalTotal = sumCash(finalCash);
     var registerTotal = getNum('registerTotal');
-    var satispay = getNum('satispay');
     var cashBatched = getNum('totalBatched');
+    var satispayReceipt = getNum('satispayReceipt');
+    var satispay = getNum('satispay');
     var refunds = getNum('refunds');
 
-    var cashIncome = registerTotal - satispay;
     var expectedCash = initialTotal + registerTotal - satispay - refunds;
     var difference = finalTotal - expectedCash;
+    var realCash = finalTotal - initialTotal + refunds;
+    var realTotal = realCash + satispay;
+    var methodDiff = satispay - satispayReceipt;
     var versamento = Math.max(0, finalTotal - initialTotal);
 
     var dateStr = fmtDateIT(document.getElementById('report-date').value) || '—';
@@ -905,29 +968,25 @@
       '<span style="font-weight:700;font-size:14px;">INCASSO TOTALE GIORNATA</span>' +
       '<span style="font-weight:700;font-size:20px;color:#059669;">' + fmt(registerTotal) + '</span></div>';
 
-    h += prSection('Dettaglio Incassi');
-    h += prRow('Incasso Totale (registratore)', fmt(registerTotal), { strong: true });
-    h += prRow('di cui Satispay', fmt(satispay));
-    h += prRow('di cui Contanti (calcolato)', fmt(cashIncome));
+    h += prSection('Scontrino di Chiusura');
+    h += prRow('Incasso Totale', fmt(registerTotal), { strong: true });
+    h += prRow('di cui Contanti', fmt(cashBatched));
+    h += prRow('di cui Satispay / elettronico', fmt(satispayReceipt));
 
-    if (hasValue('totalBatched')) {
-      var detailSum = cashBatched + satispay;
-      var detailDiff = detailSum - registerTotal;
-      h += prSection('Verifica Dettaglio Pagamenti');
-      h += prRow('Contanti battuti al registratore', fmt(cashBatched));
-      h += prRow('Satispay', fmt(satispay));
-      h += prRow('Contanti + Satispay', fmt(detailSum), { strong: true, top: true });
-      h += prRow('Totale registratore', fmt(registerTotal));
-      h += prRow('Differenza', (detailDiff > 0 ? '+' : '') + fmt(detailDiff), { strong: true, top: true, color: Math.abs(detailDiff) < 0.01 ? '#16a34a' : '#dc2626' });
+    h += prSection('Incassato Davvero');
+    h += prRow('Satispay (dall\'app)', fmt(satispay));
+    h += prRow('Contanti (cassa − fondo + rimborsi)', fmt(realCash));
+    h += prRow('Totale', fmt(realTotal), { strong: true, top: true });
+    if (isOff(methodDiff, 0)) {
+      h += prRow('Differenza Satispay app − scontrino', (methodDiff > 0 ? '+' : '') + fmt(methodDiff), { color: '#2563eb' });
+      h += '<div style="font-size:12px;color:#6b7280;margin-top:4px;">' + escHtml(methodDiff > 0
+        ? fmt(methodDiff) + ' battuti come contanti ma pagati con Satispay (errore di battitura).'
+        : fmt(Math.abs(methodDiff)) + ' battuti come Satispay ma pagati in contanti (errore di battitura).') + '</div>';
     }
-
-    h += prSection('Conteggio Cassa');
-    h += prRow('Fondo cassa iniziale', fmt(initialTotal));
-    h += prRow('Contante conteggiato a fine giornata', fmt(finalTotal));
 
     h += prSection('Quadratura Cassa');
     h += prRow('Fondo cassa iniziale', '+ ' + fmt(initialTotal));
-    h += prRow('Incasso totale (registratore)', '+ ' + fmt(registerTotal));
+    h += prRow('Incasso totale (scontrino)', '+ ' + fmt(registerTotal));
     h += prRow('Incasso Satispay (non in cassa)', '- ' + fmt(satispay));
     h += prRow('Rimborsi', '- ' + fmt(refunds));
     h += prRow('Contante atteso in cassa', fmt(expectedCash), { strong: true, top: true });
@@ -971,10 +1030,10 @@
       initialCash[d.value] = 0;
       finalCash[d.value] = 0;
     });
-    ['registerTotal', 'totalBatched', 'satispay', 'refunds'].forEach(function(id) {
+    ['registerTotal', 'totalBatched', 'satispayReceipt', 'satispay', 'refunds'].forEach(function(id) {
       document.getElementById(id).value = '';
     });
-    showTotalError(false);
+    REQUIRED_FIELDS.forEach(function(id) { showFieldError(id, false); });
     document.getElementById('report-date').value = todayIso();
     renderDenoms('denoms-initial');
     renderDenoms('denoms-final');
@@ -991,9 +1050,10 @@
     });
     document.getElementById('btn-back-initial').addEventListener('click', function() { goToStep('initial'); });
     document.getElementById('btn-go-summary').addEventListener('click', function() {
-      if (!hasValue('registerTotal')) {
-        showTotalError(true);
-        var field = document.getElementById('registerTotal');
+      var missing = missingRequired();
+      if (missing.length) {
+        missing.forEach(function(id) { showFieldError(id, true); });
+        var field = document.getElementById(missing[0]);
         field.scrollIntoView({ block: 'center' });
         field.focus();
         return;
@@ -1005,7 +1065,7 @@
 
     setupQuickButtons();
 
-    ['registerTotal', 'totalBatched', 'satispay', 'refunds'].forEach(function(id) {
+    ['registerTotal', 'totalBatched', 'satispayReceipt', 'satispay', 'refunds'].forEach(function(id) {
       document.getElementById(id).addEventListener('input', recalc);
     });
 
