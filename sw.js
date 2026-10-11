@@ -1,7 +1,7 @@
 // Service worker per Gestione Cassa Oratorio
 // Strategia: rete-prima per la pagina (così vedi sempre l'ultima versione online),
 // cache di riserva quando sei offline.
-var CACHE = 'cassa-oratorio-v7';
+var CACHE = 'cassa-oratorio-v8';
 var ASSETS = [
   './',
   './index.html',
