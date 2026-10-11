@@ -171,7 +171,7 @@
     background: #4f46e5; color: #fff; border: none; border-radius: 26px;
     padding: 13px 22px; font-size: 15px; font-weight: 700; cursor: pointer;
     box-shadow: 0 6px 18px rgba(79,70,229,0.4);
-    display: flex; align-items: center; gap: 9px; z-index: 50;
+    display: flex; align-items: center; gap: 9px; z-index: 50; white-space: nowrap;
   }
   .fab-badge {
     background: #fff; color: #4f46e5; border-radius: 11px; padding: 1px 8px;
@@ -314,7 +314,7 @@
         <div class="summary-line bold" style="border-top:none;margin-top:0;padding-top:4px;"><span>Incasso Totale (registratore di cassa):</span><span id="sum-totale">0,00 EUR</span></div>
         <div class="summary-line"><span>Satispay reale (app):</span><span id="sum-satispay">0,00 EUR</span></div>
         <div class="summary-line"><span>Contanti attesi (totale − Satispay):</span><span id="sum-contanti">0,00 EUR</span></div>
-        <div class="summary-line top"><span>Contante Conteggiato:</span><span id="sum-contante-cont">0,00 EUR</span></div>
+        <div class="summary-line top"><span>Contante effettivo in cassa:</span><span id="sum-contante-cont">0,00 EUR</span></div>
       </div>
     </div>
 
@@ -343,7 +343,7 @@
       <div class="calc-line"><span class="lbl">Incasso contanti</span><span class="val pos" id="q-contanti">+ 0,00 EUR</span></div>
       <div class="calc-line"><span class="lbl">Rimborsi</span><span class="val neg" id="q-rimborsi">- 0,00 EUR</span></div>
       <div class="calc-sub"><span class="lbl">Contante atteso in cassa</span><span class="val" id="quad-atteso">0,00 EUR</span></div>
-      <div class="calc-line"><span class="lbl">Contante conteggiato</span><span class="val" id="quad-contato">0,00 EUR</span></div>
+      <div class="calc-line"><span class="lbl">Contante effettivo in cassa</span><span class="val" id="quad-contato">0,00 EUR</span></div>
       <div class="calc-total"><span class="lbl">Differenza</span><span class="val" id="quad-diff">0,00 EUR</span></div>
       <div id="quad-alerts"></div>
     </div>
@@ -630,7 +630,7 @@
     setText('q-contanti', (cashIncome < 0 ? '- ' : '+ ') + fmt(Math.abs(cashIncome)));
     setText('q-rimborsi', '- ' + fmt(refunds));
 
-    // Registratore vs realta': se il dettaglio battuto non torna ma la cassa quadra,
+    // Verifica metodo di pagamento: se il dettaglio battuto non torna ma la cassa quadra,
     // e' solo una vendita battuta col metodo sbagliato e lo segnaliamo senza allarmare.
     var verifyContainer = document.getElementById('verify-box-container');
     clearNode(verifyContainer);
@@ -648,13 +648,13 @@
       var box = el('div', { className: 'verify-box verify-' + state });
 
       var headerRow = el('div', { style: 'display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:space-between;align-items:center;margin-bottom:8px;' });
-      headerRow.appendChild(el('span', { style: 'font-weight:600;color:#374151;', text: 'Registratore di cassa vs Realtà:' }));
+      headerRow.appendChild(el('span', { style: 'font-weight:600;color:#374151;', text: 'Verifica metodo di pagamento' }));
       headerRow.appendChild(el('span', { style: 'font-weight:700;font-size:16px;color:' + stateColor + ';', text: stateText }));
       box.appendChild(headerRow);
 
       var table = el('table', { className: 'cmp-table' });
       var head = el('tr');
-      ['', 'Registratore', 'Reale'].forEach(function(t) { head.appendChild(el('th', { text: t })); });
+      ['', 'Registratore', 'Incassato'].forEach(function(t) { head.appendChild(el('th', { text: t })); });
       table.appendChild(head);
       [
         ['Contanti', cashBatched, realCash],
@@ -668,7 +668,7 @@
         table.appendChild(tr);
       });
       box.appendChild(table);
-      box.appendChild(el('div', { className: 'field-hint', text: 'Reale: contanti dal conteggio (cassa − fondo + rimborsi), Satispay dall\'app.' }));
+      box.appendChild(el('div', { className: 'field-hint', text: 'Registratore: come sono stati battuti i pagamenti. Incassato: contanti contati in cassa (tolto il fondo, più i rimborsi già pagati) e Satispay dall\'app.' }));
 
       if (receiptOff) {
         box.appendChild(buildAlert('orange', 'Registratore di cassa:', 'contanti (' + fmt(cashBatched) + ') + Satispay (' + fmt(satispayReceipt) + ') = ' + fmt(receiptSum) +
@@ -888,13 +888,15 @@
     var border = opts.noborder ? '' : 'border-bottom:1px solid #eee;';
     var top = opts.top ? 'border-top:2px solid #cbd5e1;margin-top:4px;padding-top:8px;' : '';
     var color = opts.color ? 'color:' + opts.color + ';' : '';
-    return '<div style="display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;' + size + border + top + '">' +
+    return '<div style="display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;' + size + border + top + '">' +
       '<span style="color:#374151;">' + escHtml(label) + '</span>' +
       '<span style="' + strong + color + 'white-space:nowrap;padding-left:12px;">' + escHtml(value) + '</span></div>';
   }
 
+  // Ogni sezione e' racchiusa in un blocco che il browser non spezza tra due pagine
   function prSection(title) {
-    return '<h2 style="font-size:15px;font-weight:700;margin:16px 0 6px;padding-bottom:4px;border-bottom:2px solid #4f46e5;color:#1f2937;">' + title + '</h2>';
+    return '</div><div style="break-inside:avoid;page-break-inside:avoid;">' +
+      '<h2 style="font-size:15px;font-weight:700;margin:12px 0 4px;padding-bottom:3px;border-bottom:2px solid #4f46e5;color:#1f2937;">' + title + '</h2>';
   }
 
   function buildPrintReport() {
@@ -924,6 +926,7 @@
       '<span style="font-weight:700;font-size:14px;">INCASSO TOTALE GIORNATA</span>' +
       '<span style="font-weight:700;font-size:20px;color:#059669;">' + fmt(registerTotal) + '</span></div>';
 
+    h += '<div>';
     h += prSection('Registratore di Cassa (chiusura)');
     h += prRow('Incasso Totale', fmt(registerTotal), { strong: true });
     h += prRow('di cui Contanti', fmt(cashBatched));
@@ -953,7 +956,7 @@
     h += prRow('Incasso contanti', (cashIncome < 0 ? '- ' : '+ ') + fmt(Math.abs(cashIncome)));
     h += prRow('Rimborsi', '- ' + fmt(refunds));
     h += prRow('Contante atteso in cassa', fmt(expectedCash), { strong: true, top: true });
-    h += prRow('Contante conteggiato', fmt(finalTotal));
+    h += prRow('Contante effettivo in cassa', fmt(finalTotal));
     h += prRow('Differenza', (difference > 0 ? '+' : '') + fmt(difference), { strong: true, big: true, top: true, color: Math.abs(difference) < 0.01 ? '#16a34a' : '#dc2626' });
 
     h += prSection('Versamento');
@@ -973,7 +976,8 @@
       h += prRow(pending.length + (pending.length === 1 ? ' ordine in attesa' : ' ordini in attesa'), fmt(pendTot), { strong: true, top: true });
     }
 
-    h += '<div style="margin-top:20px;padding-top:8px;border-top:1px solid #e5e7eb;font-size:11px;color:#9ca3af;text-align:center;">Resoconto generato il ' + fmtDateIT(todayIso()) + '</div>';
+    h += '</div>';
+    h += '<div style="margin-top:16px;padding-top:8px;border-top:1px solid #e5e7eb;font-size:11px;color:#9ca3af;text-align:center;">Resoconto generato il ' + fmtDateIT(todayIso()) + '</div>';
     h += '</div>';
 
     document.getElementById('print-report').innerHTML = h;
